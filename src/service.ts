@@ -56,6 +56,7 @@ function createRequest(input: any, callback: any) {
 }
 
 // **** Try and figure out how these adapters can work with cloud functions and things like Heroku from that DappUniversity guy and his Chainlink Heroku setup video
+// **** Figure out how this entire thing actually works internally
 
 // This is a wrapper to allow the function to work with
 // GCP Functions
