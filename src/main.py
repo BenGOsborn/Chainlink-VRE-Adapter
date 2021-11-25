@@ -6,8 +6,15 @@
 # Ok, so now that we have LXC installed lets use it to spin up a container, install the requirements, run the code, cat the result and return it to the script that executed it
 
 import os
+import subprocess
 
-# First of all we need some sort of Python container we can easily spin up. Maybe we can download a Python image, maybe we will have to make one ourselves and clone it
+# First of all we need some sort of Python container we can easily spin up. Maybe we can download a Python image, maybe we will have to make one ourselves and clone it if it does not yet exist
 
 def execute_code(requirements: list, code: str) -> str:
     pass
+
+def main():
+    subprocess.run(["ls", "-l"])
+
+if __name__ == "__main__":
+    main()
