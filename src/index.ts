@@ -1,12 +1,19 @@
 import Docker from "dockerode";
 import express from "express";
+import createRequest from "./service";
 
 // Initialize clients
 const docker = new Docker({ socketPath: "/var/run/docker.sock" });
 const app = express();
 app.use(express.json());
 
-app.get("data", async (req, res) => {});
+app.get("/", async (req, res) => {
+    console.log(`POST Data ${req.body}`);
+    createRequest(req.body, (status: any, result: any) => {
+        console.log(`Result: ${result}`);
+        res.status(status).json(result);
+    });
+});
 
 // Start the server
 const PORT = process.env.PORT || 5000;
