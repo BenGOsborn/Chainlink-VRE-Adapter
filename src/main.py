@@ -7,5 +7,7 @@
 
 import os
 
+# First of all we need some sort of Python container we can easily spin up. Maybe we can download a Python image, maybe we will have to make one ourselves
+
 def execute_code(requirements: list, code: str) -> str:
     pass
