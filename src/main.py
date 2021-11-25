@@ -14,12 +14,7 @@ def execute_code(requirements: list, code: str) -> str:
     pass
 
 def main():
-    out = subprocess.run(["ls", "-l"])
-    print()
-    print()
-    print()
-    print()
-    print()
+    out = subprocess.getoutput("ls -l")
     print(out)
 
 if __name__ == "__main__":
