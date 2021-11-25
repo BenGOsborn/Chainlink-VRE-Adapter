@@ -1,3 +1,4 @@
 -   [Manipulate Docker containers](https://www.npmjs.com/package/dockerode)
 -   [Make an adapter](https://youtu.be/65NhO5xxSZc)
 -   [Template](https://github.com/thodges-gh/CL-EA-NodeJS-Template/blob/master/app.js)
+-   [Could be of assistance ?](https://github.com/smartcontractkit/external-adapters-js)
