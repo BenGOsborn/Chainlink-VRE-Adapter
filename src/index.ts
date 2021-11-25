@@ -2,8 +2,9 @@ import Docker from "dockerode";
 import express from "express";
 
 // Initialize clients
-const app = express();
 const docker = new Docker({ socketPath: "/var/run/docker.sock" });
+const app = express();
+app.use(express.json());
 
 app.get("data", async (req, res) => {});
 
