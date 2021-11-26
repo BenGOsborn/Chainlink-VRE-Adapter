@@ -4,3 +4,4 @@
 -   [Could be of assistance ?](https://github.com/smartcontractkit/external-adapters-js)
 -   [Execute Python code](https://www.digitalocean.com/community/tutorials/how-to-use-subprocess-to-run-external-programs-in-python-3)
 -   [LXC crash course](https://youtu.be/cqOtksmsxfg)
+-   [HEAVY INSPIRATION](https://github.com/engineer-man/piston/blob/master/packages/python/3.9.4/build.sh)
