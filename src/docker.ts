@@ -10,6 +10,7 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 // Utils for Docker
 export default class DockerUtils {
     docker: Docker;
+    TIMEOUT: number = 120 * 1000;
 
     // Initialize the client
     constructor() {
@@ -31,7 +32,14 @@ export default class DockerUtils {
 
     // Start the Docker image and execute the commands
     async runCode(version: version, requirements: string, code: string) {
-        // **** We need to have some sort of time set for this, and then when the timer ends we need to force kill the container
+        await new Promise((resolve) =>
+            setTimeout(() => {
+                // Remove the container after a given amount of time
+
+                // Resolve the promise **** HOW DO I DO THIS ???
+                resolve;
+            }, this.TIMEOUT)
+        );
     }
 }
 
