@@ -11,7 +11,7 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 // Utils for Docker
 export default class DockerUtils {
     docker: Docker;
-    TIMEOUT: number = 1; // Timeout in seconds
+    TIMEOUT: number = 5; // Timeout in seconds
 
     // Initialize the client
     constructor() {
@@ -35,35 +35,55 @@ export default class DockerUtils {
     async runCode(version: version, requirements: string[], code: string) {
         // Start the container
         const exitIdentifier = crypto.randomBytes(32).toString("hex");
+        const finishedIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
             Image: VERSIONS[version],
             Tty: true,
             Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
         });
-        // python3 -c "import time;time.sleep(1);print('hello WORLD')" &
+
+        // Listen for events and return the data
+        const data: any[] = [];
+        let cleanExit = true;
         container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
+            // **** DEBUG LOGS
             stream?.pipe(process.stdout);
+
+            // Setup environment
+            const formattedRequirements = requirements.reduce((previous, current) => previous + "\n" + current, "");
+            container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+            container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+
+            // Execute whenever data is output
+            stream?.on("data", async (data) => {
+                const trimmed = data.toString().trim();
+                if (trimmed === exitIdentifier || trimmed === finishedIdentifier) {
+                    // Set the exit status from the identifier
+                    if (trimmed === finishedIdentifier) cleanExit = true;
+                    else cleanExit = false;
+
+                    // Try is needed in case of the container has already stopped
+                    try {
+                        await container.kill();
+                        await container.stop();
+                        cleanExit = false;
+                    } catch {}
+                } else {
+                    data.push(data);
+                }
+            });
+
+            // Execute code
+            container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
+            container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true });
         });
-
-        // **** One way I can go about doing this is by creating a cronjob initially that will run in the next expiry period, and then if we record that log we will record an error and exit with bad response
-
-        // Start the container
         container.start();
-        // await new Promise<void>((resolve) =>
-        //     setTimeout(async () => {
-        //         // Remove the container after a given amount of time if it has not finished
-        //         try {
-        //             await container.kill();
-        //             await container.remove();
-        //             console.log("Force killed container");
-        //         } catch {
-        //             console.log("No need for any form of force delete");
-        //         }
 
-        //         // Resolve the promise
-        //         resolve();
-        //     }, this.TIMEOUT)
-        // );
+        // Return the data and status code
+        if (cleanExit) {
+            return [Buffer.concat(data).toString(), cleanExit];
+        }
+        return ["", cleanExit];
     }
 }
 
@@ -72,7 +92,8 @@ export default class DockerUtils {
     const dockerUtils = new DockerUtils();
 
     // Test run the code
-    await dockerUtils.runCode("3.8.12", [], "print(3)");
+    const res = await dockerUtils.runCode("3.8.12", [], "print(3)");
+    console.log(res);
 })()
     .then()
     .catch((error) => {
