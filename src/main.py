@@ -15,10 +15,12 @@ def execute_code(requirements: list, code: str) -> str:
     pass
 
 def main():
+    # This runs an executable and returns the output and whether there was an error
     out = subprocess.run([sys.executable, "-c", "prints(3)"], capture_output=True, text=True, timeout=2)
-    print(out.stdout.strip())
-    print(out.stderr.strip())
-    print(out.returncode)
+    if out.returncode == 0:
+        print(out.stdout.strip())
+    else:
+        print(out.stderr.strip())
 
 if __name__ == "__main__":
     main()
