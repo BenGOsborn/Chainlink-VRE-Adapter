@@ -10,7 +10,7 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 // Utils for Docker
 export default class DockerUtils {
     docker: Docker;
-    TIMEOUT: number = 120 * 1000;
+    TIMEOUT: number = 1 * 1000;
 
     // Initialize the client
     constructor() {
