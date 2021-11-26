@@ -40,20 +40,50 @@ export default class DockerUtils {
             Tty: true,
             Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
         });
+        const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
         container.start();
 
         // Setup environment
-        const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
-        const execs = [];
-        const formattedPackages = packages.reduce((previous, current) => previous + "\n" + current, "");
-        execs.push(container.exec({ Cmd: ["echo", "-en", formattedPackages, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
-        execs.push(container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
-        execs.push(container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true }));
-        const toStart = await Promise.all(execs);
-        toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
+        const formattedPackages = packages.reduce((previous, current) => previous + current + "\n", "");
+        const fileExec = await container.exec({ Cmd: ["ash", "-c", `echo -en '${formattedPackages}' > requirements.txt`], AttachStdin: true, AttachStdout: true });
+        await fileExec.start({ hijack: true, stdin: true });
+
+        const installExec = await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+        const streamInstall = await installExec.start({ hijack: true, stdin: true });
+        await new Promise<void>(async (resolve, reject) => {
+            // Record timeout message and terminate container
+            streamTimeout.on("data", async (data) => {
+                // Try is needed in case of the container has already stopped
+                try {
+                    await container.kill();
+                    await container.stop();
+                } catch {}
+
+                // Reject the promise
+                reject("Container timed out");
+            });
+
+            // Wait for the installation to of finished and check the logs
+            streamInstall.on("end", async () => {
+                // Get the exit code
+                const exitCode = (await installExec.inspect()).ExitCode;
+
+                // Try is needed in case of the container has already stopped
+                try {
+                    await container.kill();
+                    await container.stop();
+                } catch {}
+
+                // Depending on the exit code reject or resolve the data
+                if (exitCode === 0) resolve();
+                reject(`Container exited with exit code ${exitCode}`);
+            });
+        });
 
         // Make a new promise to block the function from exiting and return the data
-        const block = new Promise<string>(async (resolve, reject) => {
+        const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
+        const streamData = await codeExec.start({ hijack: true, stdin: true });
+        return await new Promise<string>(async (resolve, reject) => {
             // Record the data by the stream
             const dataRaw: any[] = [];
 
@@ -70,14 +100,13 @@ export default class DockerUtils {
             });
 
             // Execute code and record data
-            const streamData = await toStart[2].start({ hijack: true, stdin: true });
             streamData.on("data", async (data) => {
                 // Append the chunk of data to the total data
                 dataRaw.push(data);
             });
             streamData.on("end", async () => {
                 // Get the exit code
-                const exitCode = (await toStart[2].inspect()).ExitCode;
+                const exitCode = (await codeExec.inspect()).ExitCode;
 
                 // Try is needed in case of the container has already stopped
                 try {
@@ -93,7 +122,6 @@ export default class DockerUtils {
                 reject(`Container exited with exit code ${exitCode}`);
             });
         });
-        return await block;
     }
 }
 
@@ -103,7 +131,7 @@ export default class DockerUtils {
 
     // Test run the code
     const packages: string[] = ["requests==2.22.0"];
-    const res = await dockerUtils.runCode("3.8.12", packages, "import requests"); // **** Problem with the importing of requests for some reason ???
+    const res = await dockerUtils.runCode("3.8.12", packages, "import requests");
     // **** Why did I also get those weird 137 errors which go away when I increase the delay - maybe its because the delay was executing the same time as the rest of the code ? (this is probably the reason)
     console.log(res);
 })()
