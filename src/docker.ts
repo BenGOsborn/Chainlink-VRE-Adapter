@@ -27,7 +27,7 @@ export default class DockerUtils {
 
         // Pull the version if it does not exist
         const filtered = images.filter((image) => image.RepoTags[0] === VERSIONS[version]);
-        if (filtered.length === 0) return await this.docker.pull(VERSIONS[version]);
+        if (filtered.length === 0) await this.docker.pull(VERSIONS[version]);
     }
 
     // Start the Docker image and execute the commands
@@ -53,9 +53,11 @@ export default class DockerUtils {
 }
 
 (async function main() {
-    const docker = new DockerUtils();
-    const res = await docker.pullImage("3.9.9");
-    console.log(res);
+    // Initialize Docker utils
+    const dockerUtils = new DockerUtils();
+
+    // Test run the code
+    await dockerUtils.runCode("3.8.12", [], "print(3)");
 })()
     .then()
     .catch((error) => {

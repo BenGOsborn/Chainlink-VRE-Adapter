@@ -2,7 +2,7 @@
     "name": "src",
     "version": "1.0.0",
     "scripts": {
-        "dev": "npx nodemon index.ts",
+        "dev": "npx nodemon docker.ts",
         "build": "npx tsc",
         "start": "node dist/index.js"
     },
