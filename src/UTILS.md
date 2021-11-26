@@ -3,3 +3,4 @@
 -   [Template](https://github.com/thodges-gh/CL-EA-NodeJS-Template/blob/master/app.js)
 -   [Could be of assistance ?](https://github.com/smartcontractkit/external-adapters-js)
 -   [Execute Python code](https://www.digitalocean.com/community/tutorials/how-to-use-subprocess-to-run-external-programs-in-python-3)
+-   [LXC crash course](https://youtu.be/cqOtksmsxfg)
