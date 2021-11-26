@@ -7,6 +7,7 @@
 
 import os
 import subprocess
+import sys
 
 # First of all we need some sort of Python container we can easily spin up. Maybe we can download a Python image, maybe we will have to make one ourselves and clone it if it does not yet exist
 
@@ -14,8 +15,10 @@ def execute_code(requirements: list, code: str) -> str:
     pass
 
 def main():
-    out = subprocess.run(["python3"], stdout=subprocess.PIPE, text=True, input="-c 'print(\"hello\")'")
+    out = subprocess.run([sys.executable, "-c", "print('hello')"], capture_output=True, text=True, timeout=2)
     print(out.stdout)
+    print(out.stderr)
+    print(out.returncode)
 
 if __name__ == "__main__":
     main()

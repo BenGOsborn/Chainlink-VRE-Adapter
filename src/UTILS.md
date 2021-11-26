@@ -2,4 +2,4 @@
 -   [Make an adapter](https://youtu.be/65NhO5xxSZc)
 -   [Template](https://github.com/thodges-gh/CL-EA-NodeJS-Template/blob/master/app.js)
 -   [Could be of assistance ?](https://github.com/smartcontractkit/external-adapters-js)
--   [Execute Python code sandboxed](https://doc.pypy.org/en/latest/sandbox.html#introduction)
+-   [Execute Python code](https://www.digitalocean.com/community/tutorials/how-to-use-subprocess-to-run-external-programs-in-python-3)
