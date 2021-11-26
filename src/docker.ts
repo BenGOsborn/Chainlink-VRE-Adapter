@@ -103,7 +103,7 @@ export default class DockerUtils {
 
     // Test run the code
     const packages: string[] = ["requests==2.22.0"];
-    const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(3)");
+    const res = await dockerUtils.runCode("3.8.12", packages, "import requests"); // **** Problem with the importing of requests for some reason ???
     console.log(res);
 })()
     .then()
