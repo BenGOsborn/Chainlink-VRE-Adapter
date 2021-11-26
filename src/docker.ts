@@ -46,7 +46,7 @@ export default class DockerUtils {
         const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
         const execs = [];
         const formattedPackages = packages.reduce((previous, current) => previous + "\n" + current, "");
-        execs.push(container.exec({ Cmd: ["echo", formattedPackages, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
+        execs.push(container.exec({ Cmd: ["echo", "-en", formattedPackages, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
         execs.push(container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
         execs.push(container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true }));
         const toStart = await Promise.all(execs);
