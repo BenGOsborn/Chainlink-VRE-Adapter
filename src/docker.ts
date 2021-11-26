@@ -18,30 +18,22 @@ class DockerUtils {
 
     // Check if the base image exists for the given Python version
     async pullImage(version: version) {
+        // Check that the version is valid
+        if (Object.keys(VERSIONS).filter((vsion) => vsion === version).length === 0) throw Error("This version is not supported");
+
         // Get the list of images
         const images = await this.docker.listImages();
-        const imageExists = (tag: string) => {
-            const filtered = images.filter((image) => image.RepoTags[0] === tag);
-            return filtered.length > 0;
-        };
 
         // Pull the version if it does not exist
-        if (version === "3.8.12" && imageExists(VERSIONS[version])) {
-            await this.docker.pull("python:3.8.12-alpine3.14");
-        } else if (version === "3.9.9" && imageExists(VERSIONS[version])) {
-            return this.docker.pull("python:3.9.9-alpine3.14");
-        } else if (version === "3.10.0" && imageExists(VERSIONS[version])) {
-            return this.docker.pull("python:3.10.0-alpine3.14");
-        } else {
-            throw Error("This version of Python is not currently supported");
-        }
+        const filtered = images.filter((image) => image.RepoTags[0] === VERSIONS[version]);
+        if (filtered.length === 0) return await this.docker.pull(VERSIONS[version]);
     }
 }
 
 (async function main() {
     const docker = new DockerUtils();
-    const res = await docker.pullImage("3.8.12");
-    // console.log(res);
+    const res = await docker.pullImage("3.9.9");
+    console.log(res);
 })()
     .then()
     .catch((error) => {
