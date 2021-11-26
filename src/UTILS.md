@@ -10,6 +10,7 @@
 -   [Converting Python code to one line](http://jagt.github.io/python-single-line-convert/)
 
 -   [If I want TRULY async run code function that supports await and not just a callback](https://stackoverflow.com/questions/44829414/getting-stdout-and-stderr-streams-from-a-docker-container-in-node-js)
+-   [Above ^](https://coderedirect.com/questions/539929/wait-for-callback-of-async-function-in-last-stream-ondata-event)
 
 ## Design
 
