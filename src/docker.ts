@@ -45,14 +45,16 @@ export default class DockerUtils {
         // Listen for events and return the data
         const data: any[] = [];
         let cleanExit = true;
-        container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
+        container.attach({ stream: true, stdout: true, stderr: true }, async (err, stream) => {
             // **** DEBUG LOGS
             stream?.pipe(process.stdout);
 
-            // Setup environment
+            // Setup environment and execute code
             const formattedRequirements = requirements.reduce((previous, current) => previous + "\n" + current, "");
-            container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true });
-            container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+            await container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+            await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+            await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
+            await container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true });
 
             // Execute whenever data is output
             stream?.on("data", async (data) => {
@@ -60,6 +62,7 @@ export default class DockerUtils {
                 if (trimmed === exitIdentifier || trimmed === finishedIdentifier) {
                     // Set the exit status from the identifier
                     if (trimmed === finishedIdentifier) cleanExit = true;
+                    // **** Means that if this got executed there is no clean exit
                     else cleanExit = false;
 
                     // Try is needed in case of the container has already stopped
@@ -72,10 +75,6 @@ export default class DockerUtils {
                     data.push(data);
                 }
             });
-
-            // Execute code
-            container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
-            container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true });
         });
         container.start();
 
