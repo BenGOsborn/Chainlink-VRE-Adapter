@@ -21,3 +21,4 @@
 ## Todo
 
 -   Clean up this code and remove the unnecessary stuff
+-   Add better error logging in the future

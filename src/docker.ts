@@ -33,7 +33,7 @@ export default class DockerUtils {
     }
 
     // Start the Docker image and execute the commands
-    async runCode(version: version, requirements: string[], code: string, cb: (data: string, cleanExit: boolean) => Promise<void>) {
+    async runCode(version: version, requirements: string[], code: string) {
         // Start the container
         const exitIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
@@ -53,10 +53,15 @@ export default class DockerUtils {
         const toStart = await Promise.all(execs);
         toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
 
+        // Store the status and the data
+        let cleanExit: boolean[] = [];
+        let retData: string[] = [];
+
         // Record timeout message and terminate container
         streamTimeout.on("data", async () => {
-            // Run callback with no data and failed status
-            cb("", false);
+            // Update the return data with failure
+            retData.push("");
+            cleanExit.push(false);
 
             // Try is needed in case of the container has already stopped
             try {
@@ -68,9 +73,10 @@ export default class DockerUtils {
         // Execute code and record data
         const streamData = await toStart[2].start({ hijack: true, stdin: true });
         streamData.on("data", async (data) => {
-            // Run the callback with the data dn success status
+            // Update the return data with success
             const trimmed = data.toString().trim();
-            cb(trimmed, true);
+            retData.push(trimmed);
+            cleanExit.push(true);
 
             // Try is needed in case of the container has already stopped
             try {
@@ -78,6 +84,10 @@ export default class DockerUtils {
                 await container.stop();
             } catch {}
         });
+
+        // Prevent the function from closing until the container has either finished or timed out
+        while (retData.length === 0 || cleanExit.length === 0);
+        return [retData, cleanExit];
     }
 }
 
@@ -86,9 +96,8 @@ export default class DockerUtils {
     const dockerUtils = new DockerUtils();
 
     // Test run the code
-    const res = await dockerUtils.runCode("3.8.12", [], "print(3)", async (data, cleanExit) => {
-        if (cleanExit) console.log(data);
-    });
+    const res = await dockerUtils.runCode("3.8.12", [], "print(3)");
+    console.log(res);
 })()
     .then()
     .catch((error) => {
