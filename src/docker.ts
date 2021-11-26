@@ -31,13 +31,22 @@ export default class DockerUtils {
     }
 
     // Start the Docker image and execute the commands
-    async runCode(version: version, requirements: string, code: string) {
-        await new Promise((resolve) =>
-            setTimeout(() => {
-                // Remove the container after a given amount of time
+    async runCode(version: version, requirements: string[], code: string) {
+        // Start the container
+        const container = await this.docker.createContainer({ Image: VERSIONS[version], Tty: true });
 
-                // Resolve the promise **** HOW DO I DO THIS ???
-                resolve;
+        // Start the container
+        container.start();
+        await new Promise<void>((resolve) =>
+            setTimeout(async () => {
+                // Remove the container after a given amount of time if it has not finished
+                try {
+                    await container.kill();
+                    await container.remove();
+                } catch {}
+
+                // Resolve the promise
+                resolve();
             }, this.TIMEOUT)
         );
     }
