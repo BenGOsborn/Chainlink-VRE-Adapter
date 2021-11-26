@@ -11,7 +11,7 @@
 
 # Design
 
--   For every request we will spin up a new Docker image with the base requirements installed
+-   For every request we will spin up a new Docker image with the base requirements installed WITH the given version (or default version)
 -   We will then install the packages for the user
 -   Finally we will take the requested code and execute it in the given environment
 -   We will have a time limit on the Docker container that will auto expire after a given timeframe
