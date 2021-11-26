@@ -11,6 +11,9 @@ import sys
 
 # First of all we need some sort of Python container we can easily spin up. Maybe we can download a Python image, maybe we will have to make one ourselves and clone it if it does not yet exist
 
+# First of all we should check if the container actually exists
+# If it does not exist, we will create a new container with all of the dependencies installed
+
 def execute_code(requirements: list, code: str) -> str:
     pass
 
