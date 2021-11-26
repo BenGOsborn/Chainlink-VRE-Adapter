@@ -16,7 +16,7 @@ class DockerUtils {
         this.docker = new Docker({ socketPath: "/var/run/docker.sock" }); // This needs to be exposed to the container it is run it
     }
 
-    // Check if the base image exists for the given Python version
+    // Check if the base image exists for the given Python version and if it doesnt pull it down
     async pullImage(version: version) {
         // Check that the version is valid
         if (Object.keys(VERSIONS).filter((vsion) => vsion === version).length === 0) throw Error("This version is not supported");
