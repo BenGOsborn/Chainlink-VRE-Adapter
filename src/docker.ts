@@ -1,5 +1,6 @@
 import Docker from "dockerode";
 import crypto from "crypto";
+import { exec } from "child_process";
 
 // Declare the versions of Python
 export type version = "3.8.12" | "3.9.9" | "3.10.0";
@@ -35,68 +36,57 @@ export default class DockerUtils {
     async runCode(version: version, requirements: string[], code: string) {
         // Start the container
         const exitIdentifier = crypto.randomBytes(32).toString("hex");
-        const finishedIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
             Image: VERSIONS[version],
             Tty: true,
             Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
         });
+        container.start();
 
         // Listen for events and return the data
-        const data: any[] = [];
+        let retData;
         let cleanExit = true;
-        container.attach({ stream: true, stdout: true, stderr: true }, async (err, stream) => {
-            // **** DEBUG LOGS
-            stream?.pipe(process.stdout);
 
-            // Setup environment and execute code
-            const execs = [];
-            const formattedRequirements = requirements.reduce((previous, current) => previous + "\n" + current, "");
-            execs.push(container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
-            execs.push(container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
-            execs.push(container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true }));
-            execs.push(container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true }));
-            const toStart = await Promise.all(execs);
-            toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
-            toStart[2].start({ hijack: true, stdin: true }, async (err, stream) => {
-                stream?.on("data", (data) => {
-                    const trimmed = data.toString().trim();
-                    console.log(`Data from code exec: ${trimmed}`);
-                });
-            });
-            toStart[3].start({ hijack: true, stdin: true }, async (err, stream) => {
-                stream?.on("data", (data) => {
-                    const trimmed = data.toString().trim();
-                    console.log(`Data from echo done: ${trimmed}`);
-                });
-            });
+        // Setup environment
+        const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
+        const execs = [];
+        const formattedRequirements = requirements.reduce((previous, current) => previous + "\n" + current, "");
+        execs.push(container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
+        execs.push(container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
+        execs.push(container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true }));
+        const toStart = await Promise.all(execs);
+        toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
 
-            // Execute whenever data is output
-            stream?.on("data", async (data) => {
-                const trimmed = data.toString().trim();
-                console.log(`Data from echo timed out: ${trimmed}`);
-                // if (trimmed === exitIdentifier || trimmed === finishedIdentifier) {
-                //     // Set the exit status from the identifier
-                //     if (trimmed === finishedIdentifier) cleanExit = true;
-                //     // **** Means that if this got executed there is no clean exit
-                //     else cleanExit = false;
+        // Record timeout message and terminate container
+        streamTimeout.on("data", async () => {
+            // Update exit status
+            cleanExit = false;
 
-                //     // Try is needed in case of the container has already stopped
-                //     try {
-                //         await container.kill();
-                //         await container.stop();
-                //         cleanExit = false;
-                //     } catch {}
-                // } else {
-                //     data.push(data);
-                // }
-            });
+            // Try is needed in case of the container has already stopped
+            try {
+                await container.kill();
+                await container.stop();
+            } catch {}
         });
-        container.start();
+
+        // Execute code and record data
+        const streamData = await toStart[2].start({ hijack: true, stdin: true });
+        streamData.on("data", async (data) => {
+            // Set the data and close the container
+            retData = data.toString().trim();
+            console.log(retData);
+            // **** So now I am experiencing a problem where we are not waiting for the data properly - I need to keep the event listeners open for longer ???
+
+            // Try is needed in case of the container has already stopped
+            try {
+                await container.kill();
+                await container.stop();
+            } catch {}
+        });
 
         // Return the data and status code
         if (cleanExit) {
-            return [Buffer.concat(data).toString(), cleanExit];
+            return [retData, cleanExit];
         }
         return ["", cleanExit];
     }
