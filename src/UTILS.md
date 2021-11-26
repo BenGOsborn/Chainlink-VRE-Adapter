@@ -9,9 +9,13 @@
 -   [HEAVY INSPIRATION](https://github.com/engineer-man/piston/blob/master/packages/python/3.9.4/build.sh)
 -   [Converting Python code to one line](http://jagt.github.io/python-single-line-convert/)
 
-# Design
+## Design
 
 -   For every request we will spin up a new Docker image with the base requirements installed WITH the given version (or default version)
 -   We will then install the packages for the user
 -   Finally we will take the requested code and execute it in the given environment
 -   We will have a time limit on the Docker container that will auto expire after a given timeframe
+
+## Todo
+
+-   Clean up this code and remove the unnecessary stuff

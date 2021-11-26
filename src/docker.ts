@@ -50,11 +50,24 @@ export default class DockerUtils {
             stream?.pipe(process.stdout);
 
             // Setup environment and execute code
+            const execs = [];
             const formattedRequirements = requirements.reduce((previous, current) => previous + "\n" + current, "");
-            await container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true });
-            await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
-            await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
-            await container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true });
+            execs.push(container.exec({ Cmd: ["echo", formattedRequirements, ">", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
+            execs.push(container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true }));
+            execs.push(container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true }));
+            execs.push(container.exec({ Cmd: ["echo", finishedIdentifier], AttachStdin: true, AttachStdout: true }));
+            const toStart = await Promise.all(execs);
+            toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
+            toStart[2].start({ hijack: true, stdin: true }, async (err, stream) => {
+                stream?.on("data", (data) => {
+                    console.log(`Data from code exec: ${data.toString().trim()}`);
+                });
+            });
+            toStart[3].start({ hijack: true, stdin: true }, async (err, stream) => {
+                stream?.on("data", (data) => {
+                    console.log(`Data from echo done: ${data.toString().trim()}`);
+                });
+            });
 
             // Execute whenever data is output
             stream?.on("data", async (data) => {
