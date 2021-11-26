@@ -16,7 +16,7 @@ def execute_code(requirements: list, code: str) -> str:
 
 def main():
     # This runs an executable and returns the output and whether there was an error
-    out = subprocess.run([sys.executable, "-c", "prints(3)"], capture_output=True, text=True, timeout=2)
+    out = subprocess.run([sys.executable, "-c", "print(3)"], capture_output=True, text=True, timeout=2)
     if out.returncode == 0:
         print(out.stdout.strip())
     else:
