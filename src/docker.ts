@@ -33,7 +33,7 @@ export default class DockerUtils {
     }
 
     // Start the Docker image and execute the commands
-    async runCode(version: version, requirements: string[], code: string) {
+    async runCode(version: version, requirements: string[], code: string, cb: (data: string, cleanExit: boolean) => Promise<void>) {
         // Start the container
         const exitIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
@@ -42,10 +42,6 @@ export default class DockerUtils {
             Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
         });
         container.start();
-
-        // Listen for events and return the data
-        let retData;
-        let cleanExit = true;
 
         // Setup environment
         const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
@@ -59,8 +55,8 @@ export default class DockerUtils {
 
         // Record timeout message and terminate container
         streamTimeout.on("data", async () => {
-            // Update exit status
-            cleanExit = false;
+            // Run callback with no data and failed status
+            cb("", false);
 
             // Try is needed in case of the container has already stopped
             try {
@@ -72,10 +68,9 @@ export default class DockerUtils {
         // Execute code and record data
         const streamData = await toStart[2].start({ hijack: true, stdin: true });
         streamData.on("data", async (data) => {
-            // Set the data and close the container
-            retData = data.toString().trim();
-            console.log(retData);
-            // **** So now I am experiencing a problem where we are not waiting for the data properly - I need to keep the event listeners open for longer ???
+            // Run the callback with the data dn success status
+            const trimmed = data.toString().trim();
+            cb(trimmed, true);
 
             // Try is needed in case of the container has already stopped
             try {
@@ -83,12 +78,6 @@ export default class DockerUtils {
                 await container.stop();
             } catch {}
         });
-
-        // Return the data and status code
-        if (cleanExit) {
-            return [retData, cleanExit];
-        }
-        return ["", cleanExit];
     }
 }
 
@@ -97,8 +86,9 @@ export default class DockerUtils {
     const dockerUtils = new DockerUtils();
 
     // Test run the code
-    const res = await dockerUtils.runCode("3.8.12", [], "print(3)");
-    console.log(res);
+    const res = await dockerUtils.runCode("3.8.12", [], "print(3)", async (data, cleanExit) => {
+        if (cleanExit) console.log(data);
+    });
 })()
     .then()
     .catch((error) => {
