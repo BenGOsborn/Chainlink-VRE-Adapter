@@ -14,7 +14,7 @@ def execute_code(requirements: list, code: str) -> str:
     pass
 
 def main():
-    out = subprocess.run(["cat"], stdout=subprocess.PIPE, text=True, input="Hello world")
+    out = subprocess.run(["echo"], stdout=subprocess.PIPE, text=True, input="Hello world")
     print(out.stdout)
 
 if __name__ == "__main__":
