@@ -56,36 +56,36 @@ export default class DockerUtils {
         let cleanExit: boolean[] = [];
         let retData: string[] = [];
 
+        // Record timeout message and terminate container
+        streamTimeout.on("data", async () => {
+            // Update the return data with failure
+            retData.push("");
+            cleanExit.push(false);
+
+            // Try is needed in case of the container has already stopped
+            try {
+                await container.kill();
+                await container.stop();
+            } catch {}
+        });
+
+        // Execute code and record data
+        const streamData = await toStart[2].start({ hijack: true, stdin: true });
+        streamData.on("data", async (data) => {
+            // Update the return data with success
+            const trimmed = data.toString().trim();
+            retData.push(trimmed);
+            cleanExit.push(true);
+
+            // Try is needed in case of the container has already stopped
+            try {
+                await container.kill();
+                await container.stop();
+            } catch {}
+        });
+
         // Prevent the function from closing until the container has either finished or timed out
-        while (retData.length === 0 || cleanExit.length === 0) {
-            // Record timeout message and terminate container
-            streamTimeout.on("data", async () => {
-                // Update the return data with failure
-                retData.push("");
-                cleanExit.push(false);
-
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                    await container.stop();
-                } catch {}
-            });
-
-            // Execute code and record data
-            const streamData = await toStart[2].start({ hijack: true, stdin: true });
-            streamData.on("data", async (data) => {
-                // Update the return data with success
-                const trimmed = data.toString().trim();
-                retData.push(trimmed);
-                cleanExit.push(true);
-
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                    await container.stop();
-                } catch {}
-            });
-        }
+        while (retData.length === 0 || cleanExit.length === 0);
         return { data: retData[0], cleanExit: cleanExit[0] };
     }
 }
