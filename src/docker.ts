@@ -40,8 +40,8 @@ export default class DockerUtils {
             Tty: true,
             Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
         });
-        const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
         container.start();
+        const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
 
         // Setup environment
         const formattedPackages = packages.reduce((previous, current) => previous + current + "\n", "");
