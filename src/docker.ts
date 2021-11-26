@@ -60,33 +60,36 @@ export default class DockerUtils {
             toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
             toStart[2].start({ hijack: true, stdin: true }, async (err, stream) => {
                 stream?.on("data", (data) => {
-                    console.log(`Data from code exec: ${data.toString().trim()}`);
+                    const trimmed = data.toString().trim();
+                    console.log(`Data from code exec: ${trimmed}`);
                 });
             });
             toStart[3].start({ hijack: true, stdin: true }, async (err, stream) => {
                 stream?.on("data", (data) => {
-                    console.log(`Data from echo done: ${data.toString().trim()}`);
+                    const trimmed = data.toString().trim();
+                    console.log(`Data from echo done: ${trimmed}`);
                 });
             });
 
             // Execute whenever data is output
             stream?.on("data", async (data) => {
                 const trimmed = data.toString().trim();
-                if (trimmed === exitIdentifier || trimmed === finishedIdentifier) {
-                    // Set the exit status from the identifier
-                    if (trimmed === finishedIdentifier) cleanExit = true;
-                    // **** Means that if this got executed there is no clean exit
-                    else cleanExit = false;
+                console.log(`Data from echo timed out: ${trimmed}`);
+                // if (trimmed === exitIdentifier || trimmed === finishedIdentifier) {
+                //     // Set the exit status from the identifier
+                //     if (trimmed === finishedIdentifier) cleanExit = true;
+                //     // **** Means that if this got executed there is no clean exit
+                //     else cleanExit = false;
 
-                    // Try is needed in case of the container has already stopped
-                    try {
-                        await container.kill();
-                        await container.stop();
-                        cleanExit = false;
-                    } catch {}
-                } else {
-                    data.push(data);
-                }
+                //     // Try is needed in case of the container has already stopped
+                //     try {
+                //         await container.kill();
+                //         await container.stop();
+                //         cleanExit = false;
+                //     } catch {}
+                // } else {
+                //     data.push(data);
+                // }
             });
         });
         container.start();
