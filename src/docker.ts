@@ -1,4 +1,5 @@
 import Docker from "dockerode";
+import crypto from "crypto";
 
 // Declare the versions of Python
 export type version = "3.8.12" | "3.9.9" | "3.10.0";
@@ -10,7 +11,7 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 // Utils for Docker
 export default class DockerUtils {
     docker: Docker;
-    TIMEOUT: number = 1 * 1000;
+    TIMEOUT: number = 1; // Timeout in seconds
 
     // Initialize the client
     constructor() {
@@ -33,22 +34,36 @@ export default class DockerUtils {
     // Start the Docker image and execute the commands
     async runCode(version: version, requirements: string[], code: string) {
         // Start the container
-        const container = await this.docker.createContainer({ Image: VERSIONS[version], Tty: true });
+        const exitIdentifier = crypto.randomBytes(32).toString("hex");
+        const container = await this.docker.createContainer({
+            Image: VERSIONS[version],
+            Tty: true,
+            Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
+        });
+        // python3 -c "import time;time.sleep(1);print('hello WORLD')" &
+        container.attach({ stream: true, stdout: true, stderr: true }, (err, stream) => {
+            stream?.pipe(process.stdout);
+        });
+
+        // **** One way I can go about doing this is by creating a cronjob initially that will run in the next expiry period, and then if we record that log we will record an error and exit with bad response
 
         // Start the container
         container.start();
-        await new Promise<void>((resolve) =>
-            setTimeout(async () => {
-                // Remove the container after a given amount of time if it has not finished
-                try {
-                    await container.kill();
-                    await container.remove();
-                } catch {}
+        // await new Promise<void>((resolve) =>
+        //     setTimeout(async () => {
+        //         // Remove the container after a given amount of time if it has not finished
+        //         try {
+        //             await container.kill();
+        //             await container.remove();
+        //             console.log("Force killed container");
+        //         } catch {
+        //             console.log("No need for any form of force delete");
+        //         }
 
-                // Resolve the promise
-                resolve();
-            }, this.TIMEOUT)
-        );
+        //         // Resolve the promise
+        //         resolve();
+        //     }, this.TIMEOUT)
+        // );
     }
 }
 
