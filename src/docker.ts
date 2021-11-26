@@ -52,41 +52,35 @@ export default class DockerUtils {
         const toStart = await Promise.all(execs);
         toStart.slice(0, 2).forEach((exec) => exec.start({ hijack: true, stdin: true }));
 
-        // Store the status and the data
-        let cleanExit: boolean[] = [];
-        let retData: string[] = [];
+        // Make a new promise to block the function from exiting and return the data
+        const block = new Promise<string>(async (resolve, reject) => {
+            // Record timeout message and terminate container
+            streamTimeout.on("data", async () => {
+                // Try is needed in case of the container has already stopped
+                try {
+                    await container.kill();
+                    await container.stop();
+                } catch {}
 
-        // Record timeout message and terminate container
-        streamTimeout.on("data", async () => {
-            // Update the return data with failure
-            retData.push("");
-            cleanExit.push(false);
+                // Reject the promise
+                reject("Container timed out");
+            });
 
-            // Try is needed in case of the container has already stopped
-            try {
-                await container.kill();
-                await container.stop();
-            } catch {}
+            // Execute code and record data
+            const streamData = await toStart[2].start({ hijack: true, stdin: true });
+            streamData.on("data", async (data) => {
+                // Try is needed in case of the container has already stopped
+                try {
+                    await container.kill();
+                    await container.stop();
+                } catch {}
+
+                // Update the return data with success
+                const trimmed = data.toString().trim();
+                resolve(trimmed);
+            });
         });
-
-        // Execute code and record data
-        const streamData = await toStart[2].start({ hijack: true, stdin: true });
-        streamData.on("data", async (data) => {
-            // Update the return data with success
-            const trimmed = data.toString().trim();
-            retData.push(trimmed);
-            cleanExit.push(true);
-
-            // Try is needed in case of the container has already stopped
-            try {
-                await container.kill();
-                await container.stop();
-            } catch {}
-        });
-
-        // Prevent the function from closing until the container has either finished or timed out
-        while (retData.length === 0 || cleanExit.length === 0);
-        return { data: retData[0], cleanExit: cleanExit[0] };
+        return await block;
     }
 }
 
