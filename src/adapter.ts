@@ -28,6 +28,8 @@ export default function createRequest(input: any, callback: any) {
             // It's common practice to store the desired value at the top-level
             // result key. This allows different adapters to be compatible with
             // one another.
+
+            // **** WHAT DO THESE 2 LINES DO AND WHAT DOES MINE DO DIFFERENTLY ?????
             response.data.result = Requester.validateResultNumber(response.data, [tsyms]);
             callback(response.status, Requester.success(jobRunID, response));
         })
