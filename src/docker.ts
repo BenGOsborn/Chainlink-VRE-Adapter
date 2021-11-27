@@ -96,8 +96,7 @@ export default class DockerUtils {
 
             // Execute code and record data
             streamData.on("data", async (data) => {
-                // Append the chunk of data to the total data
-                dataRaw.push(data);
+                dataRaw.push(data); // Append the chunk of data to the total data
             });
             streamData.on("end", async () => {
                 // Get the exit code
