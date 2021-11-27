@@ -36,6 +36,7 @@ export default function createRequest(input: any, callback: any) {
             // one another.
 
             // **** WHAT DO THESE 2 LINES DO AND WHAT DOES MINE DO DIFFERENTLY ?????
+            // **** ================================================================
             response.data.result = Requester.validateResultNumber(response.data, [tsyms]);
             callback(response.status, Requester.success(jobRunID, response));
         })
