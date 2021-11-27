@@ -13,12 +13,13 @@ import DockerUtils, { version, VERSIONS } from "../docker";
     // Run some test code
     const packages: string[] = ["requests==2.22.0"];
     const code = "import requests;print(requests.get('https://www.google.com/'))";
+
     console.log(`\nInstalling packages\n===================`);
     packages.forEach((pkg) => console.log(pkg));
     console.log(`\nExecuting code:\n===================\n${code}`);
-    const res = await dockerUtils.runCode(version, code, packages);
 
     // Log the result
+    const res = await dockerUtils.runCode(version, code, packages);
     console.log(`\nResult of executed code:\n===================\n${res}`);
 })()
     .then()
