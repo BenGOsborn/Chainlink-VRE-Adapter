@@ -23,3 +23,4 @@
 -   Setup DigitalOcean and Lets Encrypt
 -   Connect this to chainlink
 -   Fix some of the output edge cases e.g. new lines includes the '$', unprintable characters (but allow support for unicode characters)
+-   Make docs
