@@ -62,7 +62,7 @@ export default class DockerUtils {
                 reject("Container timed out");
             });
 
-            streamInstall.pipe(process.stdout);
+            streamInstall.pipe(process.stdout); // **** IF I GET RID OF THIS IT BREAKS - WHY ???????
 
             // Wait for the installation to of finished and check the logs
             streamInstall.on("end", async () => {
