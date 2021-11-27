@@ -1,7 +1,5 @@
 import DockerUtils, { Version, versions, JsonResponse } from "./docker";
-// const { Requester, Validator } = require("@chainlink/external-adapter");
-const { Validator } = require("./validator");
-const { Requester } = require("./requester");
+const { Requester, Validator } = require("@chainlink/external-adapter");
 
 // Define custom parameters to be used by the adapter.
 // Extra parameters can be stated in the extra object,
