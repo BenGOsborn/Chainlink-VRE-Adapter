@@ -111,7 +111,7 @@ export default class DockerUtils {
 
                 // Depending on the exit code reject or resolve the data
                 if (exitCode === 0) {
-                    // Concat the bytes and remove all nonprintable characters
+                    // Concat the bytes, remove all nonprintable characters, and return json
                     const raw = Buffer.concat(dataRaw)
                         .toString()
                         .replace(/[^ -~]+/g, "");
