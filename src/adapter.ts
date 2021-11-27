@@ -36,7 +36,7 @@ export default function createRequest(input: any, callback: any) {
         });
 
     // Execute callback
-    new Promise<void>(async (resolve, reject) => {
+    new Promise<string>(async (resolve, reject) => {
         // Initialize DockerUtils client
         const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
@@ -49,8 +49,8 @@ export default function createRequest(input: any, callback: any) {
 
         // Execute the code
         const response = await dockerUtils.runCode(version, code, packages);
-        resolve();
+        resolve(response);
     })
-        .then()
-        .catch();
+        .then((response) => callback(200, Requester.success(jobRunID, response)))
+        .catch((error) => callback(500, Requester.errored(jobRunID, error)));
 }
