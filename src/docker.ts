@@ -125,11 +125,13 @@ export default class DockerUtils {
 
     // Pull the version
     const version: version = "3.9.9";
-    dockerUtils.pullImage(version);
+    await dockerUtils.pullImage(version);
 
     // Run some test code
     const packages: string[] = ["requests==2.22.0"];
     const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(requests.get('https://www.google.com/'))");
+
+    // Log the result
     console.log(res);
 })()
     .then()
