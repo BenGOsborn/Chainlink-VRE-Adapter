@@ -7,19 +7,19 @@ import DockerUtils, { version, VERSIONS } from "../docker";
 
     // Pull the version
     const version: version = "3.9.9";
-    console.log(`Pulling Python version ${version} with image ${VERSIONS[version]}`);
+    console.log(`\nPulling Python version ${version} with image ${VERSIONS[version]}`);
     await dockerUtils.pullImage(version);
 
     // Run some test code
     const packages: string[] = ["requests==2.22.0"];
     const code = "import requests;print(requests.get('https://www.google.com/'))";
-    console.log(`Installing packages`);
+    console.log(`\nInstalling packages\n===================`);
     packages.forEach((pkg) => console.log(pkg));
-    console.log(`Executing code:\n${code}`);
+    console.log(`\nExecuting code:\n===================\n${code}`);
     const res = await dockerUtils.runCode(version, code, packages);
 
     // Log the result
-    console.log(`Result of executed code:\n${res}`);
+    console.log(`\nResult of executed code:\n===================\n${res}`);
 })()
     .then()
     .catch((error) => {
