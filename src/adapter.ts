@@ -15,11 +15,8 @@ const customParams = {
 
 export default function createRequest(input: any, callback: any) {
     // Validate Chainlink request
-    const validator = new Validator(callback, input, customParams);
+    const validator = new Validator(input, customParams);
     const jobRunID = validator.validated.id;
-
-    console.log("=================== Validated data ===================");
-    console.log(validator.validated.data);
 
     // Get the data from the request
     const version: Version = validator.validated.data.version;
