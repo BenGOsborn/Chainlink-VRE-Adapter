@@ -65,8 +65,6 @@ export default class DockerUtils {
             // Wait for the installation to of finished and check the logs
             streamInstall.on("data", () => {}); // Needed to read stream
             streamInstall.on("end", async () => {
-                console.log("LOGGED EXIT");
-
                 // Get the exit code
                 const exitCode = (await installExec.inspect()).ExitCode;
 
