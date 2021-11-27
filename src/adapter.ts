@@ -1,4 +1,4 @@
-import DockerUtils, { Version, versions } from "./docker";
+import DockerUtils, { Version, versions, JsonResponse } from "./docker";
 const { Requester, Validator } = require("@chainlink/external-adapter");
 
 // Define custom parameters to be used by the adapter.
@@ -8,13 +8,8 @@ const { Requester, Validator } = require("@chainlink/external-adapter");
 const customParams = {
     version: ["version", "v"],
     code: ["code", "executable"],
-    returnType: ["type", "returnType", "dataType"],
     packages: false,
 };
-
-// Return types for the adapater
-const returnTypes = ["bytes32", "uint256", "int256", "bool"] as const;
-type ReturnType = typeof returnTypes[number];
 
 export default function createRequest(input: any, callback: any) {
     // Validate Chainlink request
@@ -24,30 +19,10 @@ export default function createRequest(input: any, callback: any) {
     // Get the data from the request
     const version: Version = validator.validated.data.version;
     const code: string = validator.validated.data.code;
-    const returnType: typeof returnTypes = validator.validated.data.returnType; // **** Make sure to reconvert the type at the end manually (default returned type is a string)
     const packages: string[] | undefined = validator.validated.data.packages;
 
-    // The Requester allows API calls be retry in case of timeout
-    // or connection failure
-    Requester.request(config, (data: any) => {})
-        .then((response: any) => {
-            // It's common practice to store the desired value at the top-level
-            // result key. This allows different adapters to be compatible with
-            // one another.
-
-            // **** WHAT DO THESE 2 LINES DO AND WHAT DOES MINE DO DIFFERENTLY ?????
-            // **** ================================================================
-            // **** This is just a simle axios result - this is why we need to verify it this way
-            // **** I believe that this sets the resulting value as a number, however I dont think it is required to be a number ?
-            response.data.result = Requester.validateResultNumber(response.data, [tsyms]);
-            callback(response.status, Requester.success(jobRunID, response));
-        })
-        .catch((error: any) => {
-            callback(500, Requester.errored(jobRunID, error));
-        });
-
     // Execute callback
-    new Promise<string>(async (resolve, reject) => {
+    new Promise<JsonResponse>(async (resolve, reject) => {
         // Initialize DockerUtils client
         const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
@@ -62,11 +37,6 @@ export default function createRequest(input: any, callback: any) {
         const response = await dockerUtils.runCode(version, code, packages);
         resolve(response);
     })
-        .then((response) => {
-            // I need to verify the data types in here and return them accordingly
-            const parsed = JSON.parse(response);
-            console.log(parsed);
-            callback(200, Requester.success(jobRunID, { data: "", result: response, statusCode: 200 }));
-        })
+        .then((response) => callback(200, Requester.success(jobRunID, { data: { result: String(response.data) }, result: String(response.data), statusCode: 200 })))
         .catch((error) => callback(500, Requester.errored(jobRunID, error)));
 }
