@@ -1,6 +1,5 @@
 import Docker from "dockerode";
 import express from "express";
-import createRequest from "./service";
 
 // Initialize clients
 const docker = new Docker({ socketPath: "/var/run/docker.sock" });
