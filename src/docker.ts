@@ -56,23 +56,18 @@ export default class DockerUtils {
                 // Try is needed in case of the container has already stopped
                 try {
                     await container.kill();
-                    await container.stop();
                 } catch {}
 
                 // Reject the promise
                 reject("Container timed out");
             });
 
+            streamInstall.pipe(process.stdout);
+
             // Wait for the installation to of finished and check the logs
             streamInstall.on("end", async () => {
                 // Get the exit code
                 const exitCode = (await installExec.inspect()).ExitCode;
-
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                    await container.stop();
-                } catch {}
 
                 // Depending on the exit code reject or resolve the data
                 if (exitCode === 0) resolve();
@@ -92,7 +87,6 @@ export default class DockerUtils {
                 // Try is needed in case of the container has already stopped
                 try {
                     await container.kill();
-                    await container.stop();
                 } catch {}
 
                 // Reject the promise
@@ -111,7 +105,6 @@ export default class DockerUtils {
                 // Try is needed in case of the container has already stopped
                 try {
                     await container.kill();
-                    await container.stop();
                 } catch {}
 
                 // Depending on the exit code reject or resolve the data
@@ -131,7 +124,7 @@ export default class DockerUtils {
 
     // Test run the code
     const packages: string[] = ["requests==2.22.0"];
-    const res = await dockerUtils.runCode("3.8.12", packages, "import requests");
+    const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(3)");
     // **** Why did I also get those weird 137 errors which go away when I increase the delay - maybe its because the delay was executing the same time as the rest of the code ? (this is probably the reason)
     console.log(res);
 })()
