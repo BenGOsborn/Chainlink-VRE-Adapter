@@ -62,10 +62,11 @@ export default class DockerUtils {
                 reject("Container timed out");
             });
 
-            streamInstall.pipe(process.stdout); // **** IF I GET RID OF THIS IT BREAKS - WHY ???????
-
             // Wait for the installation to of finished and check the logs
+            streamInstall.on("data", () => {}); // Needed to read stream
             streamInstall.on("end", async () => {
+                console.log("LOGGED EXIT");
+
                 // Get the exit code
                 const exitCode = (await installExec.inspect()).ExitCode;
 
