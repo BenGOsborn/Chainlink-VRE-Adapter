@@ -3,7 +3,7 @@ import DockerUtils, { version, VERSIONS } from "../docker";
 (async function main() {
     // Initialize Docker utils
     console.log("Initializing DockerUtils client");
-    const dockerUtils = new DockerUtils({ socketPath: "/var/run/docker.sock" });
+    const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" });
 
     // Pull the version
     const version: version = "3.9.9";

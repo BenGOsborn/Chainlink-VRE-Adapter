@@ -11,11 +11,12 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 // Utils for Docker
 export default class DockerUtils {
     private docker: Docker;
-    private TIMEOUT: number = 120; // Timeout in seconds
+    private timeout: number; // Timeout in seconds
 
     // Initialize the client
-    constructor(options?: Docker.DockerOptions) {
+    constructor(timeout: number, options?: Docker.DockerOptions) {
         this.docker = new Docker(options);
+        this.timeout = timeout;
     }
 
     // Check if the base image exists for the given Python version and if it doesnt pull it down
@@ -38,7 +39,7 @@ export default class DockerUtils {
         const container = await this.docker.createContainer({
             Image: VERSIONS[version],
             Tty: true,
-            Entrypoint: ["python3", "-c", `import time;time.sleep(${this.TIMEOUT});print('${exitIdentifier}')`, "&"],
+            Entrypoint: ["python3", "-c", `import time;time.sleep(${this.timeout});print('${exitIdentifier}')`, "&"],
         });
         container.start();
         const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });

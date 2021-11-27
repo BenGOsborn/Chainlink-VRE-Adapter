@@ -14,7 +14,7 @@ app.post("/", async (req, res) => {
     });
 });
 
-// const dockerUtils = new DockerUtils({ socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
+// const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 // app.post("/execute", async (req, res) => {
 //     // Get the data from the body and check that it is valid
 //     const { version, code, packages }: { version: version; code: string; packages: string[] | undefined } = req.body;
