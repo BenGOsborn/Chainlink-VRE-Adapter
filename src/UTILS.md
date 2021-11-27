@@ -20,3 +20,5 @@
 
 -   Clean up this code and remove the unnecessary stuff
 -   Add better error logging in the future
+-   Setup DigitalOcean and Lets Encrypt
+-   Connect this to chainlink
