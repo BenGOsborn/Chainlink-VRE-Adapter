@@ -126,7 +126,6 @@ export default class DockerUtils {
     // Test run the code
     const packages: string[] = ["requests==2.22.0"];
     const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(3)");
-    // **** Why did I also get those weird 137 errors which go away when I increase the delay - maybe its because the delay was executing the same time as the rest of the code ? (this is probably the reason)
     console.log(res);
 })()
     .then()
