@@ -1,4 +1,4 @@
-import DockerUtils, { version, VERSIONS } from "./docker";
+import DockerUtils, { Version, versions } from "./docker";
 const { Requester, Validator } = require("@chainlink/external-adapter");
 
 // Define custom parameters to be used by the adapter.
@@ -13,7 +13,8 @@ const customParams = {
 };
 
 // Return types for the adapater
-type returnType = "bytes32" | "uint256" | "int256" | "bool";
+const returnTypes = ["bytes32", "uint256", "int256", "bool"] as const;
+type ReturnType = typeof returnTypes[number];
 
 export default function createRequest(input: any, callback: any) {
     // Validate Chainlink request
@@ -21,9 +22,9 @@ export default function createRequest(input: any, callback: any) {
     const jobRunID = validator.validated.id;
 
     // Get the data from the request
-    const version: version = validator.validated.data.version;
+    const version: Version = validator.validated.data.version;
     const code: string = validator.validated.data.code;
-    const returnType: returnType = validator.validated.data.returnType; // **** Make sure to reconvert the type at the end manually (default returned type is a string)
+    const returnType: typeof returnTypes = validator.validated.data.returnType; // **** Make sure to reconvert the type at the end manually (default returned type is a string)
     const packages: string[] | undefined = validator.validated.data.packages;
 
     // The Requester allows API calls be retry in case of timeout
@@ -48,7 +49,7 @@ export default function createRequest(input: any, callback: any) {
         const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
         if (!version) reject("Missing version");
-        if (Object.keys(VERSIONS).filter((vsion) => vsion === version).length === 0) reject(`Invalid version. Valid versions are ${Object.keys(VERSIONS)}`);
+        if (versions.filter((vsion) => vsion === version).length === 0) reject(`Invalid version. Valid versions are ${Object.keys(VERSIONS)}`);
         if (!code) reject("Missing code to execute");
 
         // Check that the version has been pulled

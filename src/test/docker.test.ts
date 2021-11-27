@@ -1,4 +1,4 @@
-import DockerUtils, { version, VERSIONS } from "../docker";
+import DockerUtils, { Version, Versions } from "../docker";
 
 (async function main() {
     // Initialize Docker utils
@@ -6,8 +6,8 @@ import DockerUtils, { version, VERSIONS } from "../docker";
     const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" });
 
     // Pull the version
-    const version: version = "3.9.9";
-    console.log(`\nPulling Python version ${version} with image ${VERSIONS[version]}`);
+    const version: Version = "3.9.9";
+    console.log(`\nPulling Python version ${version} with image ${Versions[version]}`);
     await dockerUtils.pullImage(version);
 
     // Run some test code
