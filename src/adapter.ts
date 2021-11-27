@@ -34,7 +34,7 @@ export default function createRequest(input: any, callback: any) {
         url,
         params,
     };
-    // **** I dont want to do this, I want the code to execute automatically
+    // **** I dont want to do this, I want the code to execute automatically without any need for a server
 
     // The Requester allows API calls be retry in case of timeout
     // or connection failure
