@@ -52,7 +52,7 @@ export default class DockerUtils {
         const streamInstall = await installExec.start({ hijack: true, stdin: true });
         await new Promise<void>(async (resolve, reject) => {
             // Record timeout message and terminate container
-            streamTimeout.on("data", async (data) => {
+            streamTimeout.on("data", async () => {
                 // Try is needed in case of the container has already stopped
                 try {
                     await container.kill();
@@ -82,7 +82,7 @@ export default class DockerUtils {
             const dataRaw: any[] = [];
 
             // Record timeout message and terminate container
-            streamTimeout.on("data", async (data) => {
+            streamTimeout.on("data", async () => {
                 // Try is needed in case of the container has already stopped
                 try {
                     await container.kill();
