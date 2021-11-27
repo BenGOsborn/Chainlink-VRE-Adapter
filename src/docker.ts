@@ -14,8 +14,8 @@ export default class DockerUtils {
     private TIMEOUT: number = 120; // Timeout in seconds
 
     // Initialize the client
-    constructor() {
-        this.docker = new Docker({ socketPath: "/var/run/docker.sock" }); // This needs to be exposed to the container it is run it
+    constructor(options?: Docker.DockerOptions) {
+        this.docker = new Docker(options);
     }
 
     // Check if the base image exists for the given Python version and if it doesnt pull it down
@@ -32,7 +32,7 @@ export default class DockerUtils {
     }
 
     // Start the Docker image and execute the commands
-    async runCode(version: version, packages: string[], code: string) {
+    async runCode(version: version, code: string, packages?: string[]) {
         // Start the container
         const exitIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
@@ -44,35 +44,37 @@ export default class DockerUtils {
         const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
 
         // Setup environment
-        const formattedPackages = packages.reduce((previous, current) => previous + current + "\n", "");
-        const fileExec = await container.exec({ Cmd: ["ash", "-c", `echo -en '${formattedPackages}' > requirements.txt`], AttachStdin: true, AttachStdout: true });
-        await fileExec.start({ hijack: true, stdin: true });
+        if (packages && packages.length > 0) {
+            const formattedPackages = packages.reduce((previous, current) => previous + current + "\n", "");
+            const fileExec = await container.exec({ Cmd: ["ash", "-c", `echo -en '${formattedPackages}' > requirements.txt`], AttachStdin: true, AttachStdout: true });
+            await fileExec.start({ hijack: true, stdin: true });
 
-        const installExec = await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
-        const streamInstall = await installExec.start({ hijack: true, stdin: true });
-        await new Promise<void>(async (resolve, reject) => {
-            // Record timeout message and terminate container
-            streamTimeout.on("data", async () => {
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                } catch {}
+            const installExec = await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
+            const streamInstall = await installExec.start({ hijack: true, stdin: true });
+            await new Promise<void>(async (resolve, reject) => {
+                // Record timeout message and terminate container
+                streamTimeout.on("data", async () => {
+                    // Try is needed in case of the container has already stopped
+                    try {
+                        await container.kill();
+                    } catch {}
 
-                // Reject the promise
-                reject("Container timed out");
+                    // Reject the promise
+                    reject("Container timed out");
+                });
+
+                // Wait for the installation to of finished and check the logs
+                streamInstall.on("data", () => {}); // Needed to read stream
+                streamInstall.on("end", async () => {
+                    // Get the exit code
+                    const exitCode = (await installExec.inspect()).ExitCode;
+
+                    // Depending on the exit code reject or resolve the data
+                    if (exitCode === 0) resolve();
+                    reject(`Container exited with exit code ${exitCode}`);
+                });
             });
-
-            // Wait for the installation to of finished and check the logs
-            streamInstall.on("data", () => {}); // Needed to read stream
-            streamInstall.on("end", async () => {
-                // Get the exit code
-                const exitCode = (await installExec.inspect()).ExitCode;
-
-                // Depending on the exit code reject or resolve the data
-                if (exitCode === 0) resolve();
-                reject(`Container exited with exit code ${exitCode}`);
-            });
-        });
+        }
 
         // Make a new promise to block the function from exiting and return the data
         const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
@@ -119,7 +121,7 @@ export default class DockerUtils {
 
 (async function main() {
     // Initialize Docker utils
-    const dockerUtils = new DockerUtils();
+    const dockerUtils = new DockerUtils({ socketPath: "/var/run/docker.sock" });
 
     // Pull the version
     const version: version = "3.9.9";
@@ -127,7 +129,8 @@ export default class DockerUtils {
 
     // Run some test code
     const packages: string[] = ["requests==2.22.0"];
-    const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(requests.get('https://www.google.com/'))");
+    const code = "import requests;print(requests.get('https://www.google.com/'))";
+    const res = await dockerUtils.runCode(version, code, packages);
 
     // Log the result
     console.log(res);
