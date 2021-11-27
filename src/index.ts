@@ -1,6 +1,5 @@
 import express from "express";
 import createRequest from "./adapter";
-// import DockerUtils, { version, VERSIONS } from "./docker";
 
 // Initialize clients
 const app = express();

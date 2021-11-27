@@ -37,6 +37,8 @@ export default function createRequest(input: any, callback: any) {
 
             // **** WHAT DO THESE 2 LINES DO AND WHAT DOES MINE DO DIFFERENTLY ?????
             // **** ================================================================
+            // **** This is just a simle axios result - this is why we need to verify it this way
+            // **** I believe that this sets the resulting value as a number, however I dont think it is required to be a number ?
             response.data.result = Requester.validateResultNumber(response.data, [tsyms]);
             callback(response.status, Requester.success(jobRunID, response));
         })
@@ -60,6 +62,10 @@ export default function createRequest(input: any, callback: any) {
         const response = await dockerUtils.runCode(version, code, packages);
         resolve(response);
     })
-        .then((response) => callback(200, Requester.success(jobRunID, response)))
+        .then((response) => {
+            // I need to verify the data types in here and return them accordingly
+            let parsedResponse;
+            callback(200, Requester.success(jobRunID, { data: "", result: response, statusCode: 200 }));
+        })
         .catch((error) => callback(500, Requester.errored(jobRunID, error)));
 }
