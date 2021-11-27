@@ -22,7 +22,7 @@ import DockerUtils, { Version, Versions } from "../docker";
 
     // Log the result
     const res = await dockerUtils.runCode(version, code, packages);
-    console.log(`\nResult of executed code:\n===================\n${res.data}`);
+    console.log(`\nResult of executed code:\n===================\n${res}`);
 })()
     .then()
     .catch((error) => {

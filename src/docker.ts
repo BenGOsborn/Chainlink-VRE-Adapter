@@ -81,7 +81,7 @@ export default class DockerUtils {
         // Make a new promise to block the function from exiting and return the data
         const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
         const streamData = await codeExec.start({ hijack: true, stdin: true });
-        return await new Promise<any>(async (resolve, reject) => {
+        return await new Promise<string>(async (resolve, reject) => {
             // Record the data by the stream
             const dataRaw: any[] = [];
 
@@ -112,11 +112,9 @@ export default class DockerUtils {
                 // Depending on the exit code reject or resolve the data
                 if (exitCode === 0) {
                     // Concat the bytes, remove all nonprintable characters, and return json
-                    const raw = Buffer.concat(dataRaw)
-                        .toString()
-                        .replace(/[^ -~]+/g, "");
-                    const json = JSON.parse(raw);
-                    resolve(json);
+                    const buffer = Buffer.concat(dataRaw);
+                    const cleaned = buffer.toString().replace(/[^ -~]+/g, "");
+                    resolve(cleaned);
                 }
                 reject(`Container exited with exit code ${exitCode}`);
             });
