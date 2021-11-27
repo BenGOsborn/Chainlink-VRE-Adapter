@@ -10,8 +10,8 @@ export const VERSIONS: versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9
 
 // Utils for Docker
 export default class DockerUtils {
-    docker: Docker;
-    TIMEOUT: number = 120; // Timeout in seconds
+    private docker: Docker;
+    private TIMEOUT: number = 120; // Timeout in seconds
 
     // Initialize the client
     constructor() {
@@ -123,9 +123,13 @@ export default class DockerUtils {
     // Initialize Docker utils
     const dockerUtils = new DockerUtils();
 
-    // Test run the code
+    // Pull the version
+    const version: version = "3.9.9";
+    dockerUtils.pullImage(version);
+
+    // Run some test code
     const packages: string[] = ["requests==2.22.0"];
-    const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(3)");
+    const res = await dockerUtils.runCode("3.8.12", packages, "import requests;print(requests.get('https://www.google.com/'))");
     console.log(res);
 })()
     .then()
