@@ -16,6 +16,8 @@
 -   Finally we will take the requested code and execute it in the given environment
 -   We will have a time limit on the Docker container that will auto expire after a given timeframe
 
+-   \*\*\*\* Perhaps a more reliable way of getting the data would be to output the entire stream to some sort of file, then read from the file and pipe the output to the stream
+
 ## Todo
 
 -   Clean up this code and remove the unnecessary stuff
