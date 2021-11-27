@@ -8,8 +8,12 @@ const { Requester, Validator } = require("@chainlink/external-adapter");
 const customParams = {
     version: ["version", "v"],
     code: ["code", "executable"],
+    returnType: ["type", "returnType", "dataType"],
     packages: false,
 };
+
+// Return types for the adapater
+type returnType = "bytes32" | "uint256" | "int256" | "bool";
 
 export default function createRequest(input: any, callback: any) {
     // Validate Chainlink request
@@ -19,6 +23,7 @@ export default function createRequest(input: any, callback: any) {
     // Get the data from the request
     const version: version = validator.validated.data.version;
     const code: string = validator.validated.data.code;
+    const returnType: returnType = validator.validated.data.returnType; // **** Make sure to reconvert the type at the end manually (default returned type is a string)
     const packages: string[] | undefined = validator.validated.data.packages;
 
     // The Requester allows API calls be retry in case of timeout
