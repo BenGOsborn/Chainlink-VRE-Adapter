@@ -81,7 +81,7 @@ export default class DockerUtils {
         // Make a new promise to block the function from exiting and return the data
         const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
         const streamData = await codeExec.start({ hijack: true, stdin: true });
-        return await new Promise<string>(async (resolve, reject) => {
+        return await new Promise<any>(async (resolve, reject) => {
             // Record the data by the stream
             const dataRaw: any[] = [];
 
