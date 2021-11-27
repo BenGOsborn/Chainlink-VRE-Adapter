@@ -6,9 +6,9 @@ const dockerUtils = new DockerUtils({ socketPath: "/var/run/docker.sock" }); // 
 const app = express();
 app.use(express.json());
 
-app.get("/execute", async (req, res) => {
+app.post("/execute", async (req, res) => {
     // Get the data from the body and check that it is valid
-    const { version, packages, code }: { version: version; code: string; packages: string[] | undefined } = req.body;
+    const { version, code, packages }: { version: version; code: string; packages: string[] | undefined } = req.body;
     if (!version) return res.status(400).send("Missing version");
     if (Object.keys(VERSIONS).filter((vsion) => vsion === version).length === 0)
         return res.status(400).send(`Invalid version. Valid versions are ${Object.keys(VERSIONS)}`);
