@@ -16,6 +16,9 @@ export default function createRequest(input: any, callback: any) {
     const validator = new Validator(callback, input, customParams);
     const jobRunID = validator.validated.id;
 
+    console.log("=================== Validated data ===================");
+    console.log(validator.validated.data);
+
     // Get the data from the request
     const version: Version = validator.validated.data.version;
     const code: string = validator.validated.data.code;
