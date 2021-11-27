@@ -16,13 +16,13 @@ export default function createRequest(input: any, callback: any) {
     const jobRunID = validator.validated.id;
 
     // Get the data from the request
-    const packages = validator.validated.data.packages;
     const version = validator.validated.data.version;
     const code = validator.validated.data.code;
-
+    const packages = validator.validated.data.packages;
     const params = {
-        fsym,
-        tsyms,
+        version,
+        code,
+        packages,
     };
 
     // This is where you would add method and headers
@@ -34,6 +34,7 @@ export default function createRequest(input: any, callback: any) {
         url,
         params,
     };
+    // **** I dont want to do this, I want the code to execute automatically
 
     // The Requester allows API calls be retry in case of timeout
     // or connection failure
