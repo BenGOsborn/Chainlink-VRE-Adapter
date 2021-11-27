@@ -25,16 +25,8 @@ export default function createRequest(input: any, callback: any) {
         packages,
     };
 
-    // This is where you would add method and headers
-    // you can add method like GET or POST and add it to the config
-    // The default is GET requests
-    // method = 'get'
-    // headers = 'headers.....'
-    const config = {
-        url,
-        params,
-    };
     // **** I dont want to do this, I want the code to execute automatically without any need for a server
+    // **** I want to execute my own code locally - how can I do this ?
 
     // The Requester allows API calls be retry in case of timeout
     // or connection failure
