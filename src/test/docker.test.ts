@@ -11,8 +11,10 @@ import DockerUtils, { Version, Versions } from "../docker";
     await dockerUtils.pullImage(version);
 
     // Run some test code
-    const packages: string[] = ["requests==2.22.0"];
-    const code = "import requests;print(requests.get('https://www.google.com/'))";
+    // const packages: string[] = ["requests==2.22.0"];
+    // const code = "import requests;import json;print(json.dumps({ 'data': true })))";
+    const packages: string[] = [];
+    const code = "import json;print(json.dumps({ 'data': True }))";
 
     console.log(`\nInstalling packages\n===================`);
     packages.forEach((pkg) => console.log(pkg));
