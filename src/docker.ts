@@ -112,9 +112,10 @@ export default class DockerUtils {
                 // Depending on the exit code reject or resolve the data
                 if (exitCode === 0) {
                     // Concat the bytes and remove all nonprintable characters
-                    const raw = Buffer.concat(dataRaw).toString();
+                    const raw = Buffer.concat(dataRaw)
+                        .toString()
+                        .replace(/[^ -~]+/g, "");
                     const json = JSON.parse(raw);
-                    // const cleaned = buffer.toString().replace(/[^ -~]+/g, "");
                     resolve(json);
                 }
                 reject(`Container exited with exit code ${exitCode}`);
