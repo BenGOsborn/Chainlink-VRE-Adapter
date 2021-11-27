@@ -1,3 +1,4 @@
+import DockerUtils, { version, VERSIONS } from "./docker";
 const { Requester, Validator } = require("@chainlink/external-adapter");
 
 // Define custom parameters to be used by the adapter.
@@ -16,17 +17,9 @@ export default function createRequest(input: any, callback: any) {
     const jobRunID = validator.validated.id;
 
     // Get the data from the request
-    const version = validator.validated.data.version;
-    const code = validator.validated.data.code;
-    const packages = validator.validated.data.packages;
-    const params = {
-        version,
-        code,
-        packages,
-    };
-
-    // **** I dont want to do this, I want the code to execute automatically without any need for a server
-    // **** I want to execute my own code locally - how can I do this ?
+    const version: version = validator.validated.data.version;
+    const code: string = validator.validated.data.code;
+    const packages: string[] | undefined = validator.validated.data.packages;
 
     // The Requester allows API calls be retry in case of timeout
     // or connection failure
@@ -41,4 +34,23 @@ export default function createRequest(input: any, callback: any) {
         .catch((error: any) => {
             callback(500, Requester.errored(jobRunID, error));
         });
+
+    // Execute callback
+    new Promise<void>(async (resolve, reject) => {
+        // Initialize DockerUtils client
+        const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
+
+        if (!version) reject("Missing version");
+        if (Object.keys(VERSIONS).filter((vsion) => vsion === version).length === 0) reject(`Invalid version. Valid versions are ${Object.keys(VERSIONS)}`);
+        if (!code) reject("Missing code to execute");
+
+        // Check that the version has been pulled
+        await dockerUtils.pullImage(version);
+
+        // Execute the code
+        const response = await dockerUtils.runCode(version, code, packages);
+        resolve();
+    })
+        .then()
+        .catch();
 }
