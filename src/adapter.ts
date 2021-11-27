@@ -64,7 +64,8 @@ export default function createRequest(input: any, callback: any) {
     })
         .then((response) => {
             // I need to verify the data types in here and return them accordingly
-            let parsedResponse;
+            const parsed = JSON.parse(response);
+            console.log(parsed);
             callback(200, Requester.success(jobRunID, { data: "", result: response, statusCode: 200 }));
         })
         .catch((error) => callback(500, Requester.errored(jobRunID, error)));

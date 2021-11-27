@@ -17,6 +17,7 @@
 -   We will have a time limit on the Docker container that will auto expire after a given timeframe
 
 -   \*\*\*\* Perhaps a more reliable way of getting the data would be to output the entire stream to some sort of file, then read from the file and pipe the output to the stream
+-   How about I make it so that users should just return their responses in a JSON format under the key of "data" to avoid any sort of problems ?
 
 ## Todo
 
