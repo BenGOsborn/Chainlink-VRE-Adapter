@@ -7,10 +7,7 @@ app.use(express.json());
 
 // Handle the requests
 app.post("/", async (req, res) => {
-    createRequest(req.body, (status: any, result: any) => {
-        console.log(`Result: ${result}`);
-        res.status(status).json(result);
-    });
+    createRequest(req.body, (status: any, result: any) => res.status(status).json(result));
 });
 
 // Start the server
