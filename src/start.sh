@@ -12,6 +12,10 @@ if [ -d "$data_path" ]; then
     exit
 fi
 
+# **** Does this do anything ?
+mkdir -p "$data_path"
+chmod uog+rwx "$data_path"
+
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
     echo "### Downloading recommended TLS parameters..."
     mkdir -p "$data_path/conf"
