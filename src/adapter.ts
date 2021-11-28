@@ -26,6 +26,7 @@ export default function createRequest(input: any, callback: any) {
         // Initialize DockerUtils client
         const dockerUtils = new DockerUtils(2, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
+        // Check the params
         if (!version) reject("Missing version");
         if (!dockerUtils.isSupportedVersion(version)) reject(`Invalid version. Valid versions are ${dockerUtils.getSupportedVersions()}`);
         if (!code) reject("Missing code to execute");
