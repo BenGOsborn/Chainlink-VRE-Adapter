@@ -1,20 +1,19 @@
-import DockerUtils, { Version, Versions } from "../docker";
+import DockerUtils from "../docker";
 
 (async function main() {
     // Initialize Docker utils
     console.log("Initializing DockerUtils client");
     const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" });
 
-    // Pull the version
-    const version: Version = "3.9.9";
-    console.log(`\nPulling Python version ${version} with image ${Versions[version]}`);
-    await dockerUtils.pullImage(version);
+    // Test the version
+    const version = "3.9.9";
+    const isSupported = dockerUtils.isSupportedVersion(version);
+    const supportedVersions = dockerUtils.getSupportedVersions();
+    console.log(`Version ${version} ${isSupported ? "is" : "is not"} supported. All supported options: ${supportedVersions}`);
 
     // Run some test code
-    // const packages: string[] = ["requests==2.22.0"];
-    // const code = "import requests;import json;print(json.dumps({ 'data': true })))";
-    const packages: string[] = [];
-    const code = "import json;print(json.dumps({ 'data': True }))";
+    const packages: string[] = ["requests==2.22.0"];
+    const code = "import requests;import json;print(json.dumps({ 'data': true })))";
 
     console.log(`\nInstalling packages\n===================`);
     packages.forEach((pkg) => console.log(pkg));
