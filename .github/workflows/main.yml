@@ -3,7 +3,7 @@ name: Deploy VRE
 on:
     push:
         branches:
-            - deployment
+            # - deployment
     workflow_dispatch:
 
 jobs:
@@ -20,9 +20,4 @@ jobs:
                       cd Chainlink-VRE-Adapter/src
                       docker-compose down
                       git pull
-                      docker-compose up
-
-# cd Chainlink-VRE-Adapter/src
-# docker-compose down
-# git pull
-# ./start.sh
+                      ./start.sh
