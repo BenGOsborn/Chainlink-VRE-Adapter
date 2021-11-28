@@ -1,11 +1,6 @@
 #!/bin/bash
 
-# **** THIS NEEDS MAJOR MODIFICATION ****
-
-# Load env file
-set -a; . env/.env.production; set +a
-
-domains=($FRONTEND_ADDRESS)
+domains=("example.com") # Change to fit the domain
 rsa_key_size=4096
 data_path="data/certbot"
 email="ben@gmail.com" # Adding a valid address is strongly recommended
