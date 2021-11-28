@@ -3,7 +3,7 @@ FROM node:16-alpine3.13 as build
 WORKDIR /app
 COPY package* ./
 RUN npm install
-COPY tsconfig.json *.ts ./
+COPY tsconfig.json pyVersions.json *.ts ./
 RUN npm run build
 
 # Build the files
@@ -12,7 +12,6 @@ WORKDIR /app
 COPY package* ./
 RUN npm install --production
 COPY --from=build /app/dist ./dist
-COPY pyVersions.json ./dist
 
 # Start the server
 CMD ["npm", "run", "start"]
