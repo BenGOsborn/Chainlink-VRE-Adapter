@@ -2,6 +2,7 @@ version: "3"
 
 services:
     vre:
+        context: .
         build: Dockerfile.api
         ports:
             - "5000"
