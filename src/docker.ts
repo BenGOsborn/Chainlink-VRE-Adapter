@@ -53,7 +53,43 @@ export default class DockerUtils {
 
             const installExec = await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
             const streamInstall = await installExec.start({ hijack: true, stdin: true });
-            await new Promise<void>(async (resolve, reject) => {
+            try {
+                await new Promise<void>(async (resolve, reject) => {
+                    // Record timeout message and terminate container
+                    streamTimeout.on("data", async () => {
+                        // Try is needed in case of the container has already stopped
+                        try {
+                            await container.kill();
+                        } catch {}
+
+                        // Reject the promise
+                        reject("Container timed out");
+                    });
+
+                    // Wait for the installation to of finished and check the logs
+                    streamInstall.on("data", () => {}); // Needed to read stream
+                    streamInstall.on("end", async () => {
+                        // Get the exit code
+                        const exitCode = (await installExec.inspect()).ExitCode;
+
+                        // Depending on the exit code reject or resolve the data
+                        if (exitCode === 0) resolve();
+                        reject(`Container exited with exit code ${exitCode}`);
+                    });
+                });
+            } catch (e) {
+                throw Error(e as string);
+            }
+        }
+
+        // Make a new promise to block the function from exiting and return the data
+        const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
+        const streamData = await codeExec.start({ hijack: true, stdin: true });
+        try {
+            return await new Promise<JsonResponse>(async (resolve, reject) => {
+                // Record the data by the stream
+                const dataRaw: any[] = [];
+
                 // Record timeout message and terminate container
                 streamTimeout.on("data", async () => {
                     // Try is needed in case of the container has already stopped
@@ -65,61 +101,33 @@ export default class DockerUtils {
                     reject("Container timed out");
                 });
 
-                // Wait for the installation to of finished and check the logs
-                streamInstall.on("data", () => {}); // Needed to read stream
-                streamInstall.on("end", async () => {
+                // Execute code and record data
+                streamData.on("data", async (data) => {
+                    dataRaw.push(data); // Append the chunk of data to the total data
+                });
+                streamData.on("end", async () => {
                     // Get the exit code
-                    const exitCode = (await installExec.inspect()).ExitCode;
+                    const exitCode = (await codeExec.inspect()).ExitCode;
+
+                    // Try is needed in case of the container has already stopped
+                    try {
+                        await container.kill();
+                    } catch {}
 
                     // Depending on the exit code reject or resolve the data
-                    if (exitCode === 0) resolve();
+                    if (exitCode === 0) {
+                        // Concat the bytes, remove all nonprintable characters, and return json
+                        const raw = Buffer.concat(dataRaw)
+                            .toString()
+                            .replace(/[^ -~]+/g, "");
+                        const json = JSON.parse(raw);
+                        resolve(json);
+                    }
                     reject(`Container exited with exit code ${exitCode}`);
                 });
             });
+        } catch (e) {
+            throw Error(e as string);
         }
-
-        // Make a new promise to block the function from exiting and return the data
-        const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
-        const streamData = await codeExec.start({ hijack: true, stdin: true });
-        return await new Promise<JsonResponse>(async (resolve, reject) => {
-            // Record the data by the stream
-            const dataRaw: any[] = [];
-
-            // Record timeout message and terminate container
-            streamTimeout.on("data", async () => {
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                } catch {}
-
-                // Reject the promise
-                reject("Container timed out");
-            });
-
-            // Execute code and record data
-            streamData.on("data", async (data) => {
-                dataRaw.push(data); // Append the chunk of data to the total data
-            });
-            streamData.on("end", async () => {
-                // Get the exit code
-                const exitCode = (await codeExec.inspect()).ExitCode;
-
-                // Try is needed in case of the container has already stopped
-                try {
-                    await container.kill();
-                } catch {}
-
-                // Depending on the exit code reject or resolve the data
-                if (exitCode === 0) {
-                    // Concat the bytes, remove all nonprintable characters, and return json
-                    const raw = Buffer.concat(dataRaw)
-                        .toString()
-                        .replace(/[^ -~]+/g, "");
-                    const json = JSON.parse(raw);
-                    resolve(json);
-                }
-                reject(`Container exited with exit code ${exitCode}`);
-            });
-        });
     }
 }

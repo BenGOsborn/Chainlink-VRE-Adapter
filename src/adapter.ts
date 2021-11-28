@@ -24,16 +24,24 @@ export default function createRequest(input: any, callback: any) {
     // Execute callback
     new Promise<JsonResponse>(async (resolve, reject) => {
         // Initialize DockerUtils client
-        const dockerUtils = new DockerUtils(5, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
+        const dockerUtils = new DockerUtils(2, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
         if (!version) reject("Missing version");
         if (!dockerUtils.isSupportedVersion(version)) reject(`Invalid version. Valid versions are ${dockerUtils.getSupportedVersions()}`);
         if (!code) reject("Missing code to execute");
 
         // Execute the code
-        const response = await dockerUtils.runCode(version, code, packages);
-        resolve(response);
+        try {
+            const response = await dockerUtils.runCode(version, code, packages);
+            resolve(response);
+        } catch (e) {
+            reject(e as string);
+        }
     })
-        .then((response) => callback(200, Requester.success(jobRunID, { data: { result: response.data }, result: response.data, statusCode: 200 })))
-        .catch((error) => callback(500, Requester.errored(jobRunID, error)));
+        .then((response) => {
+            callback(200, Requester.success(jobRunID, { data: { result: response.data }, result: response.data, statusCode: 200 }));
+        })
+        .catch((error) => {
+            callback(500, Requester.errored(jobRunID, error));
+        });
 }
