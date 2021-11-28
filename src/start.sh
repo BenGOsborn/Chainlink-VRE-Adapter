@@ -5,3 +5,4 @@ echo $x
 bash -c "${x}"
 
 # Start the service 
+docker-compose up --build -d
