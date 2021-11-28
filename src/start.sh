@@ -14,7 +14,8 @@ fi
 
 # **** Does this do anything ?
 mkdir -p "$data_path"
-chmod uog+rwx "$data_path"
+chmod -R uog+rwx "$data_path"
+chmod g+s "$data_path"
 
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
     echo "### Downloading recommended TLS parameters..."
