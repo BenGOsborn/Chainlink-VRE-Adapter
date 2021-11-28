@@ -20,4 +20,5 @@ jobs:
                       cd Chainlink-VRE-Adapter/src
                       docker-compose down
                       git pull
-                      docker-compose up -d
+                      bash install.sh
+                      docker-compose up --build -d
