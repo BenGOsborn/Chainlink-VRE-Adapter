@@ -25,7 +25,7 @@ export default class DockerUtils {
     }
 
     // Get all valid Python versions
-    getValidVersions() {
+    getSupportedVersions() {
         return this.versions;
     }
 
