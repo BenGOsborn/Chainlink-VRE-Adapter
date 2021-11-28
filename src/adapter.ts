@@ -24,7 +24,7 @@ export default function createRequest(input: any, callback: any) {
     // Execute callback
     new Promise<JsonResponse>(async (resolve, reject) => {
         // Initialize DockerUtils client
-        const dockerUtils = new DockerUtils(2, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
+        const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
         // Check the params
         if (!version) reject("Missing version");
