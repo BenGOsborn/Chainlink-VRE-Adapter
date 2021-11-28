@@ -20,4 +20,4 @@
 #                       cd Chainlink-VRE-Adapter/src
 #                       docker-compose down
 #                       git pull
-#                       ./start.sh
+#                       bash start.sh
