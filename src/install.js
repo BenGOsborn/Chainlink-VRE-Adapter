@@ -2,7 +2,7 @@ const fs = require("fs");
 
 (async () => {
     // Load the versions
-    const loaded = fs.readFileSync("pyVersions.json");
+    const loaded = fs.readFileSync("pyVersions.json", "utf8");
     const json = JSON.parse(loaded);
 
     // Generate the install command

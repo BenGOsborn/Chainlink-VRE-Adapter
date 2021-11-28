@@ -1,13 +1,7 @@
 import Docker from "dockerode";
-import crypto from "crypto";
+import fs from "fs";
 
 // Declare the versions of Python
-export const versions = ["3.8.12", "3.9.9", "3.10.0"] as const;
-export type Version = typeof versions[number];
-type Versions = {
-    [key in Version]: string;
-};
-export const Versions: Versions = { "3.8.12": "python:3.8.12-alpine3.14", "3.9.9": "python:3.9.9-alpine3.14", "3.10.0": "python:3.10.0-alpine3.14" } as const;
 export interface JsonResponse {
     data: any;
 }
@@ -16,34 +10,37 @@ export interface JsonResponse {
 export default class DockerUtils {
     private docker: Docker;
     private timeout: number; // Timeout in seconds
+    private versions: string[];
+    private images: { [key: string]: string };
 
     // Initialize the client
     constructor(timeout: number, options?: Docker.DockerOptions) {
+        // Initialize variables
         this.docker = new Docker(options);
         this.timeout = timeout;
+
+        const file = fs.readFileSync("pyVersions.json", "utf8");
+        this.images = JSON.parse(file);
+        this.versions = Object.keys(this.images);
     }
 
-    // Check if the base image exists for the given Python version and if it doesnt pull it down
-    async pullImage(version: Version) {
-        // Check that the version is valid
-        if (versions.filter((vsion) => vsion === version).length === 0) throw Error("This version is not supported");
+    // Get all valid Python versions
+    getValidVersions() {
+        return this.versions;
+    }
 
-        // Get the list of images
-        const images = await this.docker.listImages();
-
-        // Pull the version if it does not exist
-        const filtered = images.filter((image) => image.RepoTags[0] === Versions[version]);
-        if (filtered.length === 0) await this.docker.pull(Versions[version]);
+    // Check that a version of Python is supported
+    isSupportedVersion(version: string) {
+        return this.versions.filter((vsn) => vsn === version).length > 0;
     }
 
     // Start the Docker image and execute the commands
-    async runCode(version: Version, code: string, packages?: string[]) {
+    async runCode(version: string, code: string, packages?: string[]) {
         // Start the container
-        const exitIdentifier = crypto.randomBytes(32).toString("hex");
         const container = await this.docker.createContainer({
-            Image: Versions[version],
+            Image: this.images[version],
             Tty: true,
-            Entrypoint: ["python3", "-c", `import time;time.sleep(${this.timeout});print('${exitIdentifier}')`, "&"],
+            Entrypoint: ["python3", "-c", `import time;time.sleep(${this.timeout});print('TIMEOUT')`, "&"],
         });
         container.start();
         const streamTimeout = await container.attach({ stream: true, stdout: true, stderr: true });
