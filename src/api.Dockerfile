@@ -3,7 +3,7 @@ FROM node:16-alpine3.13 as build
 WORKDIR /app
 COPY package* ./
 RUN npm install
-COPY tsconfig.json *.ts ./
+COPY tsconfig.json *.ts pyVersions.json ./
 RUN npm run build
 
 # Build the files
