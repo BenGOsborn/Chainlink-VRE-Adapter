@@ -1,4 +1,4 @@
-# Install the supported Python images **** THIS WILL NEED REFACTORING IN THE MAIN CODE
+# Install the supported Python images
 docker build -t bengosborn/install . -f install.Dockerfile
 x=$(docker run bengosborn/install)
 echo $x
