@@ -54,6 +54,8 @@ export default class DockerUtils {
             const installExec = await container.exec({ Cmd: ["pip3", "install", "-r", "requirements.txt"], AttachStdin: true, AttachStdout: true });
             const streamInstall = await installExec.start({ hijack: true, stdin: true });
             await new Promise<void>(async (resolve, reject) => {
+                streamTimeout.pipe(process.stdout); // **** DEBUGGING
+
                 // Record timeout message and terminate container
                 streamTimeout.on("data", async () => {
                     // Try is needed in case of the container has already stopped
@@ -82,6 +84,8 @@ export default class DockerUtils {
         const codeExec = await container.exec({ Cmd: ["python3", "-c", code], AttachStdin: true, AttachStdout: true });
         const streamData = await codeExec.start({ hijack: true, stdin: true });
         return await new Promise<JsonResponse>(async (resolve, reject) => {
+            streamTimeout.pipe(process.stdout); // **** DEBUGGING
+
             // Record the data by the stream
             const dataRaw: any[] = [];
 

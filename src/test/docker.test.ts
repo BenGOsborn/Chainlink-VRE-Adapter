@@ -12,8 +12,10 @@ import DockerUtils from "../docker";
     console.log(`Version ${version} ${isSupported ? "is" : "is not"} supported. All supported options: ${supportedVersions}`);
 
     // Run some test code
-    const packages: string[] = ["requests==2.22.0"];
-    const code = "import requests;import json;print(json.dumps({ 'data': true })))";
+    // const packages: string[] = ["requests==2.22.0"];
+    // const code = "import requests;import json;print(json.dumps({ 'data': true })))";
+    const packages: string[] = [];
+    const code = "import json;print(json.dumps({ 'data': true })))";
 
     console.log(`\nInstalling packages\n===================`);
     packages.forEach((pkg) => console.log(pkg));
