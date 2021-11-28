@@ -16,9 +16,13 @@ jobs:
                   username: ${{secrets.SSH_USERNAME}}
                   host: ${{secrets.SSH_HOST}}
                   key: ${{secrets.SSH_KEY}}
-
                   script: |
                       cd Chainlink-VRE-Adapter/src
                       docker-compose down
                       git pull
-                      ./start.sh
+                      docker-compose up
+
+# cd Chainlink-VRE-Adapter/src
+# docker-compose down
+# git pull
+# ./start.sh
