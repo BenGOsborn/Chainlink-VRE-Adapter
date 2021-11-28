@@ -1,6 +1,6 @@
 #!/bin/bash
 
-domains=("example.com") # Change to fit the domain
+domains=("137.184.33.37") # Change to fit the domain
 rsa_key_size=4096
 data_path="certbot"
 email="ben@gmail.com" # Adding a valid address is strongly recommended
