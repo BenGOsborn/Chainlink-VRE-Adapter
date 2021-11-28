@@ -2,8 +2,9 @@ version: "3"
 
 services:
     vre:
-        context: .
-        build: Dockerfile.api
+        build:
+            context: .
+            dockerfile: api.Dockerfile
         ports:
             - "5000"
         environment:
