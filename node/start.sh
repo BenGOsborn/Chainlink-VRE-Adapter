@@ -19,4 +19,4 @@ fi
 
 # Start the node
 # docker run -dp 6688:6688 -v ${PWD}:/chainlink -it --env-file=.env smartcontract/chainlink:1.0.0 local n -p .password -a .api
-docker run -p 6688:6688 -v ${PWD}:/chainlink -it --env-file=.env smartcontract/chainlink:1.0.0 local n -p /chainlink/.password -a /chainlink/.api
+docker run -dp 6688:6688 -v ${PWD}:/chainlink -it --env-file=.env smartcontract/chainlink:1.0.0 local n -p /chainlink/.password -a /chainlink/.api
