@@ -3,7 +3,7 @@
 
 type = "directrequest"
 schemaVersion = 1
-name = "Python VRE"
+name = "Python VRE uint256"
 contractAddress = ""
 observationSource = """
     decode_log [type=ethabidecodelog
