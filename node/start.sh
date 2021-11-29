@@ -13,10 +13,9 @@ if [ ! -e ".api" ]; then
     echo $password >> .api
 fi
 if [ ! -e ".password" ]; then
-    read -sp "Your wallet password: " wpassword
+    read -sp $'\n'"Your wallet password: " wpassword
     echo $wpassword >> .password
 fi
 
 # Start the node
-# docker run -dp 6688:6688 -v ${PWD}:/chainlink -it --env-file=.env smartcontract/chainlink:1.0.0 local n -p .password -a .api
 docker run -dp 6688:6688 -v ${PWD}:/chainlink -it --env-file=.env smartcontract/chainlink:1.0.0 local n -p /chainlink/.password -a /chainlink/.api
