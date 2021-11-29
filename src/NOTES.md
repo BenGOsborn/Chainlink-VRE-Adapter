@@ -15,3 +15,5 @@
 
 -   Fix some of the output edge cases e.g. new lines includes the '$', unprintable characters (but allow support for unicode characters)
 -   Make docs
+-   Deploy with Chainlink Node, set up jobs, and make and test a test contract
+-   Add to a marketplace
