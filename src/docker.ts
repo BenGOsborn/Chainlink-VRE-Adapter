@@ -78,7 +78,7 @@ export default class DockerUtils {
                     });
                 });
             } catch (e) {
-                throw Error(e as string);
+                throw Error(`'${e as string}' in packages`);
             }
         }
 
@@ -127,7 +127,7 @@ export default class DockerUtils {
                 });
             });
         } catch (e) {
-            throw Error(e as string);
+            throw Error(`'${e as string}' in code execution`);
         }
     }
 }
