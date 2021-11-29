@@ -43,9 +43,11 @@ export default function createRequest(input: any, callback: any) {
         }
     })
         .then((response) => {
+            console.log(`Response: ${response}`);
             callback(200, Requester.success(jobRunID, { data: { result: response.data }, result: response.data, statusCode: 200 }));
         })
         .catch((error) => {
+            console.error(error);
             callback(500, Requester.errored(jobRunID, error));
         });
 }
