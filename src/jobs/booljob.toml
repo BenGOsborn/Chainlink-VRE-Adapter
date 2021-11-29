@@ -1,0 +1,24 @@
+# Replace 'contractAddress' and 'submit_tx' 'to' with Oracle address 
+# Make sure a bridge has been registered with specified name and URL
+
+type = "directrequest"
+schemaVersion = 1
+name = "Python VRE"
+contractAddress = ""
+observationSource = """
+    decode_log [type=ethabidecodelog
+                abi="OracleRequest(bytes32 indexed specId, address requester, bytes32 requestId, uint256 payment, address callbackAddr, bytes4 callbackFunctionId, uint256 cancelExpiration, uint256 dataVersion, bytes data)"
+                data="$(jobRun.logData)"
+                topics="$(jobRun.logTopics)"]
+
+    decode_cbor [type=cborparse data="$(decode_log.data)"]
+    fetch [type=bridge name="py-vre" requestData="{\\"id\\": $(jobSpec.externalJobID), \\"data\\": { \\"version\\": $(decode_cbor.version), \\"code\\": $(decode_cbor.code), \\packages\\": $(decode_cbor.packages) }}"]
+    parse [type=jsonparse path="result" data="$(fetch)"]
+    encode_data [type=ethabiencode abi="(bool value)" data="{ \\"value\\": $(parse) }"]
+    encode_tx [type=ethabiencode
+                abi="fulfillOracleRequest(bytes32 requestId, uint256 payment, address callbackAddress, bytes4 callbackFunctionId, uint256 expiration, bytes32 data)"
+                data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_data)}"] 
+    submit_tx [type=ethtx to="" data="$(encode_tx)"]
+
+    decide_log -> decode_cbor -> fetch -> parse -> encode_data -> encode_tx -> submit_tx
+"""
