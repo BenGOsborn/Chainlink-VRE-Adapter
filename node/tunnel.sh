@@ -2,7 +2,6 @@
 
 # Start or stop the SSH tunnel
 read -p "Decision: start/stop: " decision
-
 case $decision in
     "start")
         ssh worker@137.184.33.37 -L 6688:localhost:6688 -N -f
