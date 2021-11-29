@@ -108,3 +108,9 @@ log.jsonl
 secret
 .api
 .password
+
+# Hardhat
+coverage.json
+typechain
+cache
+artifacts
