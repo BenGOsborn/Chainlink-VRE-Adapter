@@ -19,7 +19,10 @@ export default function createRequest(input: any, callback: any) {
     // Get the data from the request
     const version: string = validator.validated.data.version;
     const code: string = validator.validated.data.code;
-    const packages: string[] | undefined = validator.validated.data.packages;
+
+    const packagesRaw: string | undefined = validator.validated.data.packages;
+    let packages: string[] | undefined = undefined;
+    if (packagesRaw) packages = packagesRaw.split(",");
 
     // Execute callback
     new Promise<JsonResponse>(async (resolve, reject) => {

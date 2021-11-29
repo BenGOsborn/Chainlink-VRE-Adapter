@@ -13,11 +13,6 @@
 
 ## Todo
 
--   Clean up this code and remove the unnecessary stuff
--   Add better error logging in the future
--   Setup DigitalOcean and Lets Encrypt
--   Connect this to chainlink
 -   Fix some of the output edge cases e.g. new lines includes the '$', unprintable characters (but allow support for unicode characters)
 -   Make docs
-
 -   What I should do is remove the packages and replace it with a single semicolon string which I can then parse on the chain itself
