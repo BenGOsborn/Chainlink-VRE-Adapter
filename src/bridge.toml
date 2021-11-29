@@ -1,0 +1,14 @@
+type = "directrequest"
+schemaVersion = 1
+name = "Python VRE"
+contractAddress = "" # Your contract address
+observationSource = """
+    decode_log [type=ethabidecodelog
+                abi="OracleRequest(bytes32 indexed specId, address requester, bytes32 requestId, uint256 payment, address callbackAddr, bytes4 callbackFunctionId, uint256 cancelExpiration, uint256 dataVersion, bytes data)"
+                data="$(jobRun.logData)"
+                topics="$(jobRun.logTopics)"]
+
+    decode_cbor [type=cborparse data="$(decode_log.data)"]
+    fetch [type=bridge name="py-vre" requestData="{\\"id\\": $(jobSpec.externalJobID), \\"data\\": { \\"playerId\\": $(decode_cbor.playerId)}}"]
+
+"""
