@@ -27,7 +27,8 @@ export default function createRequest(input: any, callback: any) {
     // Execute callback
     new Promise<JsonResponse>(async (resolve, reject) => {
         // Initialize DockerUtils client
-        const dockerUtils = new DockerUtils(120, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
+        const TIMEOUT = 30;
+        const dockerUtils = new DockerUtils(TIMEOUT, { socketPath: "/var/run/docker.sock" }); // This socket needs to be exposed to the container this is run in to interact with Docker
 
         // Check the params
         if (!version) reject("Missing version");
@@ -43,7 +44,7 @@ export default function createRequest(input: any, callback: any) {
         }
     })
         .then((response) => {
-            console.log(`Response: ${response}`);
+            console.log(`Response: '${response.data}'`);
             callback(200, Requester.success(jobRunID, { data: { result: response.data }, result: response.data, statusCode: 200 }));
         })
         .catch((error) => {
