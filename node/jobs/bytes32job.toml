@@ -4,7 +4,7 @@
 type = "directrequest"
 schemaVersion = 1
 name = "Python VRE bytes32"
-contractAddress = ""
+contractAddress = "CHANGEME"
 observationSource = """
     decode_log [type=ethabidecodelog
                 abi="OracleRequest(bytes32 indexed specId, address requester, bytes32 requestId, uint256 payment, address callbackAddr, bytes4 callbackFunctionId, uint256 cancelExpiration, uint256 dataVersion, bytes data)"
@@ -18,7 +18,7 @@ observationSource = """
     encode_tx [type=ethabiencode
                 abi="fulfillOracleRequest(bytes32 requestId, uint256 payment, address callbackAddress, bytes4 callbackFunctionId, uint256 expiration, bytes32 data)"
                 data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_data)}"] 
-    submit_tx [type=ethtx to="" data="$(encode_tx)"]
+    submit_tx [type=ethtx to="CHANGEME" data="$(encode_tx)"]
 
     decide_log -> decode_cbor -> fetch -> parse -> encode_data -> encode_tx -> submit_tx
 """
