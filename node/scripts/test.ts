@@ -13,8 +13,8 @@ async function main() {
     const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, "");
 
     const version = "3.9.9";
-    const code = "import json;print(json.dumps({ 'data': 3 }))";
-    const packages = "";
+    const code = "import requests;import json;print(json.dumps({ 'data': 3 }))";
+    const packages = "requests";
 
     await test.requestResult(oracleAddress, jobId, version, code, packages);
     console.log("Made request for data");
