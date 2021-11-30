@@ -17,10 +17,10 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 ### Using the node in a smart contract
 
 ```sol
-Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillResult.selector);
-req.add("version", _version);
-req.add("code", _code);
-req.add("packages", _packages);
+Chainlink.Request memory req = buildChainlinkRequest(_jobId, address(this), this.fulfillResult.selector);
+req.add("version", "3.9.9"); // Valid version include "3.8.12", "3.9.9", "3.10.0"
+req.add("code", "import requests;import json;print(json.dumps({ 'data': 3 }))"); // Your output will be read from the 'data' field in the output JSON - make sure you choose the correct jobId for the type of data you wish to receive in return
+req.add("packages", "requests,"); // A comma seperated list of dependencies - the more dependencies you have the longer it will take to run - the API WILL time out if it takes longer than 30 seconds
 sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
 ```
 
