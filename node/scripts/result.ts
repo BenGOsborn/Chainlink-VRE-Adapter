@@ -10,7 +10,7 @@ async function main() {
 
     // Log the executed result
     const result = await test.result();
-    console.log(result);
+    console.log(result.toString());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
