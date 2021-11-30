@@ -22,4 +22,8 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 **Production**
 
+1. `cd src`
+2. `bash install.sh`
+3. `docker-compose up --build -d`
+
 ### Instructions - Running the Chainlink node
