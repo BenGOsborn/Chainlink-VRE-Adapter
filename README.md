@@ -37,3 +37,4 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 -   To interface with any of the custom jobs you will need to add a new bridge in your node called `py-vre` with the URL of your API
 -   To deploy an oracle contract, add your private key `PRIVATE_KEY=` and Infura URL `INFURA_URL=` to `.env` in `node`
 -   To add one of the jobs from `node/jobs` to the node, under the `jobs` tab of your node GUI select `New Job`, then copy and paste the job from one of the `.toml` files. Replace `CHANGEME` with the address of your deployed oracle contract
+-   It should be noted that each job is suitable for a different return type (bool, bytes32, int256, uint256) - use the appropriate job for the appropriate type of data you wish for your contract to receive
