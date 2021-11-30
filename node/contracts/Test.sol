@@ -14,7 +14,7 @@ contract Test is ChainlinkClient {
     }
 
     function callRequest(string memory _jobId, address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
-        Chainlink.Request memory request = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
+        Chainlink.Request memory request = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfill.selector);
         request.add("version", _version);
         request.add("code", _code); // MUST OUTPUT JSON - JSON library is required
         request.add("packages", _packages);
@@ -28,4 +28,15 @@ contract Test is ChainlinkClient {
     function withdrawLink() public {
         IERC20(linkAddress).transfer(msg.sender, IERC20(linkAddress).balanceOf(address(this)));
     }
+
+    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly { // solhint-disable-line no-inline-assembly
+            result := mload(add(source, 32))
+        }
+  }
 }

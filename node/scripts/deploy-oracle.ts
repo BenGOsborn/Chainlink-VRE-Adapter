@@ -6,8 +6,8 @@ async function main() {
     // Deploy the contract
     await hre.run("compile");
     const Oracle = await hre.ethers.getContractFactory("Oracle");
-    const LINK_ADDRESS = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
-    const oracle = await Oracle.deploy(LINK_ADDRESS);
+    const linkAddress = addresses.linkAddress;
+    const oracle = await Oracle.deploy(linkAddress);
     await oracle.deployed();
     console.log(`Deployed oracle to: https://rinkeby.etherscan.io/address/${oracle.address}`);
     addresses.oracleAddress = oracle.address;
