@@ -22,10 +22,10 @@ contract Test is ChainlinkClient {
     }
 
     function fulfill(bytes32 _requestId, uint256 _response) public recordChainlinkFulfillment(_requestId) {
-        result = _repsonse;
+        result = _response;
     }
 
     function withdrawLink() public {
-        IERC20(linkAddress).transfer(msg.sender, IERC20(linkAddress).balanceOf(address(this)););
+        IERC20(linkAddress).transfer(msg.sender, IERC20(linkAddress).balanceOf(address(this)));
     }
 }
