@@ -14,14 +14,14 @@ contract Test is ChainlinkClient {
     }
 
     function requestEthereumPrice(address _oracle, string memory _jobId) public {
-        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfill.selector);
+        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillEthereumPrice.selector);
         req.add("get", "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD");
         req.add("path", "USD");
         req.addInt("times", 100);
         sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
     }
 
-    function fulfill(bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
+    function fulfillEthereumPrice(bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
         currentPrice = _price;
     }
 
