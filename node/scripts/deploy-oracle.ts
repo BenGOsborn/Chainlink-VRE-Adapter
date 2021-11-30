@@ -18,7 +18,7 @@ async function main() {
     console.log(`Approved ${nodeAddress} as a node operator`);
 
     // Save the addresses to the file
-    fs.writeFileSync("../address.json", JSON.stringify(addresses)); // **** THIS IS NOT UPDATING ANYTHING - WHY
+    fs.writeFileSync("address.json", JSON.stringify(addresses)); // **** THIS IS NOT UPDATING ANYTHING - WHY
 }
 
 // We recommend this pattern to be able to use async/await everywhere

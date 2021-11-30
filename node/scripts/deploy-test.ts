@@ -21,7 +21,7 @@ async function main() {
     console.log(`Transferred ${LINK_AMOUNT} LINK`);
 
     // Save the addresses to a file
-    fs.writeFileSync("../address.json", JSON.stringify(addresses));
+    fs.writeFileSync("address.json", JSON.stringify(addresses));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
