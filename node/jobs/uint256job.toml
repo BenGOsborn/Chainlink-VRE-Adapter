@@ -12,7 +12,7 @@ observationSource = """
                 topics="$(jobRun.logTopics)"]
 
     decode_cbor [type=cborparse data="$(decode_log.data)"]
-    fetch [type=bridge name="py-vre" requestData="{\\"id\\": $(jobSpec.externalJobID), \\"data\\": { \\"version\\": $(decode_cbor.version), \\"code\\": $(decode_cbor.code), \\packages\\": $(decode_cbor.packages) }}"]
+    fetch [type=bridge name="py-vre" requestData="{\\"id\\": $(jobSpec.externalJobID), \\"data\\": { \\"version\\": $(decode_cbor.version), \\"code\\": $(decode_cbor.code), \\"packages\\": $(decode_cbor.packages) }}"]
     parse [type=jsonparse path="result" data="$(fetch)"]
     encode_data [type=ethabiencode abi="(uint256 value)" data="{ \\"value\\": $(parse) }"]
     encode_tx [type=ethabiencode
@@ -20,5 +20,5 @@ observationSource = """
                 data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_data)}"] 
     submit_tx [type=ethtx to="CHANGEME" data="$(encode_tx)"]
 
-    decide_log -> decode_cbor -> fetch -> parse -> encode_data -> encode_tx -> submit_tx
+    decode_log -> decode_cbor -> fetch -> parse -> encode_data -> encode_tx -> submit_tx
 """
