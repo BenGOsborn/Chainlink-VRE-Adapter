@@ -10,10 +10,10 @@ async function main() {
 
     // Request the code to be called
     const oracleAddress = addresses.oracleAddress;
-    const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, ""); // Replace with your job ID
+    const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, ""); // Replace with your job ID - choose the right jobId for each different return type
 
     const version = "3.9.9";
-    const code = "import requests;import json;print(json.dumps({ 'data': 3 }))";
+    const code = "import requests;import json;print(json.dumps({ 'data': 3 }))"; // Your MUST print your data out in JSON with the data under the "data" field
     const packages = "requests";
 
     await test.requestResult(oracleAddress, jobId, version, code, packages);
