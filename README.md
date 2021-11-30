@@ -1,5 +1,7 @@
 # Chainlink VRE Adapter
 
+## WARNING: DO NOT RUN CODE THAT YOU DO NOT UNDERSTAND. BE CAREFUL WHEN GIVING THIS SCRIPT ACCESS TO YOUR PRIVATE KEY. I AM NOT RESPONSIBLE FOR ANY FUNDS YOU MAY LOSE.
+
 ## A Python virtual runtime environment that allows smart contracts to execute Python code via [Chainlink](https://docs.chain.link/chainlink-nodes).
 
 ### Description
