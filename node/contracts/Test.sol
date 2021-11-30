@@ -26,11 +26,11 @@ contract Test is ChainlinkClient {
         currentPrice = _price;
     }
 
-    function requestResult(address _oracle, string memory _jobId) public {
+    function requestResult(address _oracle, string memory _jobId, string memory _version, string memory _code, string memory _packages) public {
         Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillResult.selector); 
-        req.add("version", "3.9.9");
-        req.add("code", "import json;print(json.dumps({ 'data': 3 }))");
-        req.add("packages", "");
+        req.add("version", _version);
+        req.add("code", _code);
+        req.add("packages", _packages);
         sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
     }
 
