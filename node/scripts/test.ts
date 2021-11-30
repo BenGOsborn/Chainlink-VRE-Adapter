@@ -10,7 +10,7 @@ async function main() {
 
     // Request the code to be called
     const oracleAddress = addresses.oracleAddress;
-    const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, "");
+    const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, ""); // Replace with your job ID
 
     const version = "3.9.9";
     const code = "import requests;import json;print(json.dumps({ 'data': 3 }))";
