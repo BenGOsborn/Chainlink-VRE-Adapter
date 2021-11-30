@@ -7,8 +7,8 @@ async function main() {
     // Deploy the contract
     await hre.run("compile");
     const Test = await hre.ethers.getContractFactory("Test");
-    const LINK_ADDRESS = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
-    const test = await Test.deploy(LINK_ADDRESS);
+    const linkAddress = addresses.linkAddress;
+    const test = await Test.deploy(linkAddress);
     await test.deployed();
     console.log(`Deployed test to: https://rinkeby.etherscan.io/address/${test.address}`);
     addresses.testAddress = test.address;
