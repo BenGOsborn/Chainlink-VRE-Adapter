@@ -24,7 +24,7 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 1. `cd src`
 2. `bash install.sh`
-3. `docker-compose up --build -d`, then goto port 80 on your machine to access the API
+3. `docker-compose up --build -d`, then go to port 80 on your machine to access the API
 
 ### Instructions - Running the Chainlink node
 
