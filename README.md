@@ -14,13 +14,19 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 -   [Docker==v20.10.11](https://www.docker.com/)
 
+### Using the node in a smart contract
+
+```sol
+
+```
+
+For a real example look at `node/contracts/Test.sol`
+
 ### Instructions - Running the API
 
 **Dev - [Node v10.19.0](https://nodejs.org/en/) required**
 
-1. `cd src`
-2. `npm install`
-3. `npm run dev`
+1. `cd src` 2. `npm install` 3. `npm run dev`
 
 **Production**
 
