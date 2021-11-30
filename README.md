@@ -14,7 +14,7 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 ### Instructions - Running the API
 
-**Dev - YOU WILL NEED [Node v10.19.0](https://nodejs.org/en/)**
+**Dev - [Node v10.19.0](https://nodejs.org/en/) required**
 
 1. `cd src`
 2. `npm install`
