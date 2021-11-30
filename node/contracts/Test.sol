@@ -2,39 +2,23 @@
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 
-contract Test is ChainlinkClient, ConfirmedOwner {
+contract Test is ChainlinkClient {
     using Chainlink for Chainlink.Request;
 
     uint256 constant private ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
     uint256 public currentPrice;
-    int256 public changeDay;
-    bytes32 public lastMarket;
 
     event RequestEthereumPriceFulfilled(
         bytes32 indexed requestId,
         uint256 indexed price
     );
 
-    event RequestEthereumChangeFulfilled(
-        bytes32 indexed requestId,
-        int256 indexed change
-    );
-
-    event RequestEthereumLastMarket(
-        bytes32 indexed requestId,
-        bytes32 indexed market
-    );
-
-    constructor(address linkAddress_) ConfirmedOwner(msg.sender){
+    constructor(address linkAddress_) {
         setChainlinkToken(linkAddress_);
     }
 
-    function requestEthereumPrice(address _oracle, string memory _jobId)
-        public
-        onlyOwner
-    {
+    function requestEthereumPrice(address _oracle, string memory _jobId) public {
         Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillEthereumPrice.selector);
         req.add("get", "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD");
         req.add("path", "USD");
@@ -42,10 +26,7 @@ contract Test is ChainlinkClient, ConfirmedOwner {
         sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
     }
 
-    function fulfillEthereumPrice(bytes32 _requestId, uint256 _price)
-        public
-        recordChainlinkFulfillment(_requestId)
-    {
+    function fulfillEthereumPrice(bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
         emit RequestEthereumPriceFulfilled(_requestId, _price);
         currentPrice = _price;
     }
@@ -54,21 +35,9 @@ contract Test is ChainlinkClient, ConfirmedOwner {
         return chainlinkTokenAddress();
     }
 
-    function withdrawLink() public onlyOwner {
+    function withdrawLink() public {
         LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
         require(link.transfer(msg.sender, link.balanceOf(address(this))), "Unable to transfer");
-    }
-
-    function cancelRequest(
-        bytes32 _requestId,
-        uint256 _payment,
-        bytes4 _callbackFunctionId,
-        uint256 _expiration
-    )
-        public
-        onlyOwner
-    {
-        cancelChainlinkRequest(_requestId, _payment, _callbackFunctionId, _expiration);
     }
 
     function stringToBytes32(string memory source) private pure returns (bytes32 result) {
