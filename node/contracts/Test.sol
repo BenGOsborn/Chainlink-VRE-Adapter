@@ -1,5 +1,5 @@
-pragma solidity 0.6.6;
-import "@chainlink/contracts/src/v0.6/ChainlinkClient.sol";
+pragma solidity 0.8.0;
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Test is ChainlinkClient {
@@ -11,11 +11,11 @@ contract Test is ChainlinkClient {
         setChainlinkToken(linkAddress_);
     }
 
-    function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee) public returns (bytes32) {
+    function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
         Chainlink.Request memory request = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
-        request.add("version", "3.9.9");
-        request.add("code", "import requests;import json;print(json.dumps({ 'data': 3 }))"); // MUST return JSON format - JSON library is required
-        request.add("packages", "requests");
+        request.add("version", _version);
+        request.add("code", _code); // MUST return JSON format - JSON library is required
+        request.add("packages", _packages);
         return sendChainlinkRequestTo(_oracle, request, _linkFee);
     }
 

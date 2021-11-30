@@ -1,20 +1,15 @@
 import hre from "hardhat";
-import ERC20Abi from "@openzeppelin/contracts/build/contracts/ERC20.json";
+import TestABI from "../artifacts/contracts/Test.sol/Test.json";
+import addresses from "../address.json";
 
 async function main() {
-    // Deploy the contract
-    const Test = await hre.ethers.getContractFactory("Test");
-    const LINK_ADDRESS = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
-    const test = await Test.deploy(LINK_ADDRESS);
-    await test.deployed();
-    console.log(`Deployed test to: https://rinkeby.etherscan.io/address/${test.address}`);
-
-    // Fund the contract with LINK
+    // Initialize the contract
     const signer = hre.ethers.provider.getSigner();
-    const link = new hre.ethers.Contract(LINK_ADDRESS, ERC20Abi.abi, signer);
-    const LINK_AMOUNT = "100";
-    await link.transfer(test.address, LINK_AMOUNT);
-    console.log(`Transferred ${LINK_AMOUNT} LINK`);
+    const test = new hre.ethers.Contract(addresses.testAddress, TestABI.abi, signer);
+    console.log(`Initialized Test contract from ${addresses.testAddress}`);
+
+    // Request the code to be called
+    // "import requests;import json;print(json.dumps({ 'data': 3 }))"
 }
 
 // We recommend this pattern to be able to use async/await everywhere
