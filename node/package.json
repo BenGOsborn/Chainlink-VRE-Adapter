@@ -4,7 +4,8 @@
     "scripts": {
         "deploy-oracle": "npx hardhat run --network rinkeby scripts/deploy-oracle.ts",
         "deploy-test": "npx hardhat run --network rinkeby scripts/deploy-test.ts",
-        "test": "npx hardhat run --network rinkeby scripts/test.ts"
+        "test": "npx hardhat run --network rinkeby scripts/test.ts",
+        "result": "npx hardhat run --network rinkeby scripts/result.ts"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^4.4.0"

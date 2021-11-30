@@ -8,15 +8,9 @@ async function main() {
     const test = new hre.ethers.Contract(addresses.testAddress, TestABI.abi, signer);
     console.log(`Initialized Test contract from ${addresses.testAddress}`);
 
-    // Request the code to be called
-    const jobId = hre.ethers.utils.toUtf8Bytes("fb0c6b74f97148069faf5aec269dc1bf");
-    const oracleAddress = addresses.oracleAddress;
-    const linkFee = "1";
-
-    const version = "3.9.9";
-    const code = "import json;print(json.dumps({ 'data': 3 }))";
-    const packages = "";
-    await test.callRequest(jobId, oracleAddress, linkFee, version, code, packages);
+    // Log the executed result
+    const result = await test.result();
+    console.log(result);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
