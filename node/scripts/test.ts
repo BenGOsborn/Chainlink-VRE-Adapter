@@ -9,7 +9,7 @@ async function main() {
     console.log(`Initialized Test contract from ${addresses.testAddress}`);
 
     // Request the code to be called
-    // const jobId = hre.ethers.utils.toUtf8Bytes("fb0c6b74f97148069faf5aec269dc1bf");
+    const jobId = "fb0c6b74f97148069faf5aec269dc1bf";
     const oracleAddress = addresses.oracleAddress;
     const linkFee = "1";
 
