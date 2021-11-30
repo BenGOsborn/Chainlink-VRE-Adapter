@@ -16,8 +16,7 @@ async function main() {
     const version = "3.9.9";
     const code = "import json;print(json.dumps({ 'data': 3 }))";
     const packages = "";
-    // await test.callRequest(jobId, oracleAddress, linkFee, version, code, packages);
-    await test.callRequest(oracleAddress, linkFee, version, code, packages);
+    await test.callRequest(jobId, oracleAddress, linkFee, version, code, packages);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
