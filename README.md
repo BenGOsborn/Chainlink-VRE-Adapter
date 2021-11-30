@@ -12,9 +12,7 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 -   Docker==v20.10.11
 
-### Instructions
-
-#### Running the API
+### Instructions - Running the API
 
 **Dev - YOU WILL NEED [Node v10.19.0](https://nodejs.org/en/)**
 
@@ -24,4 +22,4 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 **Production**
 
-#### Running the Chainlink node
+### Instructions - Running the Chainlink node
