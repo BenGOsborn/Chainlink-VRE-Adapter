@@ -13,10 +13,7 @@ async function main() {
     const oracleAddress = addresses.oracleAddress;
     const linkFee = "1";
 
-    const version = "3.9.9";
-    const code = "import json;print(json.dumps({ 'data': 3 }))";
-    const packages = "";
-    await test.callRequest(jobId, oracleAddress, linkFee, version, code, packages);
+    await test.callRequest(jobId, oracleAddress, linkFee);
     console.log("Made request for data");
 }
 
