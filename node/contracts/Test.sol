@@ -14,7 +14,7 @@ contract Test is ChainlinkClient {
     function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee) public returns (bytes32) {
         Chainlink.Request memory request = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
         request.add("version", "3.9.9");
-        request.add("code", "import requests;import json;print(json.dumps({ 'data': 3 }))");
+        request.add("code", "import requests;import json;print(json.dumps({ 'data': 3 }))"); // MUST return JSON format - JSON library is required
         request.add("packages", "requests");
         return sendChainlinkRequestTo(_oracle, request, _linkFee);
     }
