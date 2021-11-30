@@ -2,9 +2,13 @@
     "name": "node",
     "version": "1.0.0",
     "scripts": {
-        "deploy": "npx hardhat run --network rinkeby scripts/deploy.ts"
+        "deploy-oracle": "npx hardhat run --network rinkeby scripts/deploy-oracle.ts",
+        "deploy-test": "npx hardhat run --network rinkeby scripts/deploy-test.ts",
+        "test": "npx hardhat run --network rinkeby scripts/test.ts"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@openzeppelin/contracts": "^4.4.0"
+    },
     "devDependencies": {
         "@chainlink/contracts": "^0.2.2",
         "@nomiclabs/hardhat-ethers": "^2.0.2",
