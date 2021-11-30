@@ -15,7 +15,7 @@ async function main() {
 
     // Fund the contract with LINK
     const signer = hre.ethers.provider.getSigner();
-    const link = new hre.ethers.Contract(LINK_ADDRESS, ERC20Abi.abi, signer);
+    const link = new hre.ethers.Contract(linkAddress, ERC20Abi.abi, signer);
     const LINK_AMOUNT = "100";
     await link.transfer(test.address, LINK_AMOUNT);
     console.log(`Transferred ${LINK_AMOUNT} LINK`);
