@@ -9,7 +9,7 @@ async function main() {
     console.log(`Initialized Test contract from ${addresses.testAddress}`);
 
     // Request the code to be called
-    const jobId = "f4e2291e-cd92-450f-84ab-fe22ae75c618".replace(/-/g, "");
+    const jobId = "c6a4d344-fa83-4ebb-a964-885266f120ba".replace(/-/g, "");
     const oracleAddress = addresses.oracleAddress;
 
     await test.requestEthereumPrice(oracleAddress, jobId);
