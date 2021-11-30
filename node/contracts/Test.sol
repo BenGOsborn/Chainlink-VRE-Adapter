@@ -13,7 +13,9 @@ contract Test is ChainlinkClient {
         setChainlinkToken(linkAddress_);
     }
 
-    function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
+    // function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
+    function callRequest(address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
+        bytes32 _jobId = "fb0c6b74f97148069faf5aec269dc1bf";
         Chainlink.Request memory request = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
         request.add("version", _version);
         request.add("code", _code); // MUST OUTPUT JSON - JSON library is required
