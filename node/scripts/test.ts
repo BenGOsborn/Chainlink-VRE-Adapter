@@ -10,11 +10,13 @@ async function main() {
 
     // Request the code to be called
     const oracleAddress = addresses.oracleAddress;
-    // const jobId = "c6a4d344-fa83-4ebb-a964-885266f120ba".replace(/-/g, "");
     const jobId = "577c5537-2348-4df4-b16e-047fb44348af".replace(/-/g, "");
 
-    // await test.requestEthereumPrice(oracleAddress, jobId);
-    await test.requestResult(oracleAddress, jobId);
+    const version = "3.9.9";
+    const code = "import json;print(json.dumps({ 'data': 3 }))";
+    const packages = "";
+
+    await test.requestResult(oracleAddress, jobId, version, code, packages);
     console.log("Made request for data");
 }
 
