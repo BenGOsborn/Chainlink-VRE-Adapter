@@ -29,5 +29,11 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 ### Instructions - Running the Chainlink node
 
 1. `cd node`
-2. Rename `.env.template` to `.env` and replace the variables defined by `CHANGEME` with their respective parameters. You will need access to an Ethereum JSON-RPC API which you can get using [Infura](https://infura.io/), and you will need a database URI which you can get from [Heroku](https://www.heroku.com/), creating a new app, and installing the `Heroku Postgres` add on
+2. Rename `.env.template` to `.env` and replace the variables defined by `CHANGEME` with their respective parameters. You will need access to an Ethereum JSON-RPC API which you can get using [Infura](https://infura.io/) (MAKE SURE YOU USE THE WEBSOCKET VERSION `wss://...`), and you will need a database URI which you can get from [Heroku](https://www.heroku.com/), creating a new app, and installing the `Heroku Postgres` add on
 3. `bash start.sh` and then enter your credentials for the node, then open the link it provides you with to access the node
+
+### Instructions - Using the Chainlink node - [Node v10.19.0](https://nodejs.org/en/) required
+
+-   To interface with any of the custom jobs you will need to add a new bridge in your node called `py-vre` with the URL of your API
+-   To deploy an oracle contract, add your private key `PRIVATE_KEY=` and Infura URL `INFURA_URL=` to `.env` in `node`
+-   To add one of the jobs from `node/jobs` to the node, under the `jobs` tab of your node GUI select `New Job`, then copy and paste the job from one of the `.toml` files. Replace `CHANGEME` with the address of your deployed oracle contract
