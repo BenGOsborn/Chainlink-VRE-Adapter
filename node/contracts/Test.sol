@@ -3,6 +3,8 @@ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Test is ChainlinkClient {
+    using Chainlink for Chainlink.Request;
+
     address private linkAddress;
     uint256 public result;
 
@@ -14,7 +16,7 @@ contract Test is ChainlinkClient {
     function callRequest(bytes32 _jobId, address _oracle, uint256 _linkFee, string memory _version, string memory _code, string memory _packages) public returns (bytes32) {
         Chainlink.Request memory request = buildChainlinkRequest(_jobId, address(this), this.fulfill.selector);
         request.add("version", _version);
-        request.add("code", _code); // MUST return JSON format - JSON library is required
+        request.add("code", _code); // MUST OUTPUT JSON - JSON library is required
         request.add("packages", _packages);
         return sendChainlinkRequestTo(_oracle, request, _linkFee);
     }
