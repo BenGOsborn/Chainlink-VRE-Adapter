@@ -1,7 +1,6 @@
 import hre from "hardhat";
 import fs from "fs";
-import dotenv from "dotenv";
-dotenv.config();
+import addresses from "../address.json";
 
 async function main() {
     // Deploy the contract
@@ -11,11 +10,15 @@ async function main() {
     const oracle = await Oracle.deploy(LINK_ADDRESS);
     await oracle.deployed();
     console.log(`Deployed oracle to: https://rinkeby.etherscan.io/address/${oracle.address}`);
+    addresses.oracleAddress = oracle.address;
 
     // Approve the Oracle address to the contract
-    const nodeAddress = process.env.NODE_ADDRESS as string;
+    const nodeAddress = addresses.nodeAddress;
     await oracle.setFulfillmentPermission(nodeAddress, true);
     console.log(`Approved ${nodeAddress} as a node operator`);
+
+    // Save the addresses to the file
+    fs.writeFileSync("../addresses.json", JSON.stringify(addresses));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
