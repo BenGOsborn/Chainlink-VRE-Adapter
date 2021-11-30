@@ -9,11 +9,6 @@ contract Test is ChainlinkClient {
     uint256 constant private ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
     uint256 public currentPrice;
 
-    event RequestEthereumPriceFulfilled(
-        bytes32 indexed requestId,
-        uint256 indexed price
-    );
-
     constructor(address linkAddress_) {
         setChainlinkToken(linkAddress_);
     }
@@ -27,7 +22,6 @@ contract Test is ChainlinkClient {
     }
 
     function fulfillEthereumPrice(bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
-        emit RequestEthereumPriceFulfilled(_requestId, _price);
         currentPrice = _price;
     }
 
