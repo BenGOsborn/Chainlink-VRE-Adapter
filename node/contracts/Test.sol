@@ -1,42 +1,84 @@
-pragma solidity ^0.8.0;
-import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.7;
 
-contract Test is ChainlinkClient {
+import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
+
+contract Test is ChainlinkClient, ConfirmedOwner {
     using Chainlink for Chainlink.Request;
 
-    address private linkAddress;
-    uint256 public result;
+    uint256 constant private ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
+    uint256 public currentPrice;
+    int256 public changeDay;
+    bytes32 public lastMarket;
 
-    constructor(address linkAddress_) {
-        linkAddress = linkAddress_;
-        setChainlinkToken(linkAddress);
+    event RequestEthereumPriceFulfilled(
+        bytes32 indexed requestId,
+        uint256 indexed price
+    );
+
+    event RequestEthereumChangeFulfilled(
+        bytes32 indexed requestId,
+        int256 indexed change
+    );
+
+    event RequestEthereumLastMarket(
+        bytes32 indexed requestId,
+        bytes32 indexed market
+    );
+
+    constructor(address linkAddress_) ConfirmedOwner(msg.sender){
+        setChainlinkToken(linkAddress_);
     }
 
-    function callRequest(string memory _jobId, address _oracle, uint256 _linkFee) public {
-        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfill.selector);
+    function requestEthereumPrice(address _oracle, string memory _jobId)
+        public
+        onlyOwner
+    {
+        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillEthereumPrice.selector);
         req.add("get", "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD");
         req.add("path", "USD");
         req.addInt("times", 100);
-        sendChainlinkRequestTo(_oracle, req, _linkFee);
+        sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
     }
 
-    function fulfill(bytes32 _requestId, uint256 _response) public recordChainlinkFulfillment(_requestId) {
-        result = _response;
+    function fulfillEthereumPrice(bytes32 _requestId, uint256 _price)
+        public
+        recordChainlinkFulfillment(_requestId)
+    {
+        emit RequestEthereumPriceFulfilled(_requestId, _price);
+        currentPrice = _price;
     }
 
-    function withdrawLink() public {
-        IERC20(linkAddress).transfer(msg.sender, IERC20(linkAddress).balanceOf(address(this)));
+    function getChainlinkToken() public view returns (address) {
+        return chainlinkTokenAddress();
     }
 
-    function stringToBytes32(string memory source) private pure returns (bytes32 _result) {
+    function withdrawLink() public onlyOwner {
+        LinkTokenInterface link = LinkTokenInterface(chainlinkTokenAddress());
+        require(link.transfer(msg.sender, link.balanceOf(address(this))), "Unable to transfer");
+    }
+
+    function cancelRequest(
+        bytes32 _requestId,
+        uint256 _payment,
+        bytes4 _callbackFunctionId,
+        uint256 _expiration
+    )
+        public
+        onlyOwner
+    {
+        cancelChainlinkRequest(_requestId, _payment, _callbackFunctionId, _expiration);
+    }
+
+    function stringToBytes32(string memory source) private pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
             return 0x0;
         }
 
         assembly { // solhint-disable-line no-inline-assembly
-            _result := mload(add(source, 32))
+            result := mload(add(source, 32))
         }
-  }
+    }
 }

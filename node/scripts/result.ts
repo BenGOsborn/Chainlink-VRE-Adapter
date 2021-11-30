@@ -9,7 +9,7 @@ async function main() {
     console.log(`Initialized Test contract from ${addresses.testAddress}`);
 
     // Log the executed result
-    const result = await test.result();
+    const result = await test.currentPrice();
     console.log(result.toString());
 }
 
