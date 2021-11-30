@@ -9,7 +9,7 @@ async function main() {
     console.log(`Initialized Test contract from ${addresses.testAddress}`);
 
     // Request the code to be called
-    const jobId = "fb0c6b74f97148069faf5aec269dc1bf";
+    const jobId = "5f365826624242ad87ccda36c0b86c93";
     const oracleAddress = addresses.oracleAddress;
     const linkFee = "1";
 
