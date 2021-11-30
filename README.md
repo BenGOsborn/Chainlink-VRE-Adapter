@@ -10,7 +10,7 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 ### Requirements
 
--   Docker==v20.10.11
+-   [Docker==v20.10.11](https://www.docker.com/)
 
 ### Instructions - Running the API
 
