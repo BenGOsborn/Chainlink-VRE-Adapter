@@ -8,6 +8,7 @@ contract Test is ChainlinkClient {
 
     uint256 constant private ORACLE_PAYMENT = 1 * LINK_DIVISIBILITY;
     uint256 public currentPrice;
+    uint256 public currentResult;
 
     constructor(address linkAddress_) {
         setChainlinkToken(linkAddress_);
@@ -23,6 +24,18 @@ contract Test is ChainlinkClient {
 
     function fulfillEthereumPrice(bytes32 _requestId, uint256 _price) public recordChainlinkFulfillment(_requestId) {
         currentPrice = _price;
+    }
+
+    function requestResult(address _oracle, string memory _jobId) public {
+        Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillResult.selector); 
+        req.add("version", "3.9.9");
+        req.add("code", "import json;print(json.dumps({ 'data': 3 }))");
+        req.add("packages", "");
+        sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
+    }
+
+    function fulfillResult(bytes32 _requestId, uint256 _result) public recordChainlinkFulfillment(_requestId) {
+        currentResult = _result;
     }
 
     function withdrawLink() public {
