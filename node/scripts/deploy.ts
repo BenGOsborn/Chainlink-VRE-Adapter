@@ -9,10 +9,12 @@ async function main() {
     const LINK_ADDRESS = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"; // Change for your network of choice to deploy to
     const oracle = await Oracle.deploy(LINK_ADDRESS);
     await oracle.deployed();
+    console.log(`Greeter deployed to: ${oracle.address}`);
 
-    // Approve the contract
-    const oracleAddress = process.env.ORACLE_ADDRESS as string;
-    console.log("Greeter deployed to:", oracle.address);
+    // Approve the Oracle address to the contract
+    const nodeAddress = process.env.NODE_ADDRESS as string;
+    await oracle.setFulfillmentPermission(nodeAddress, true);
+    console.log(`Approved ${nodeAddress} as a node operator`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
