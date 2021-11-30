@@ -30,4 +30,4 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 
 1. `cd node`
 2. Rename `.env.template` to `.env` and replace the variables defined by `CHANGEME` with their respective parameters. You will need access to an Ethereum JSON-RPC API which you can get using [Infura](https://infura.io/), and you will need a database URI which you can get from [Heroku](https://www.heroku.com/), creating a new app, and installing the `Heroku Postgres` add on
-3. `bash start.sh` and then enter your credentials for the node
+3. `bash start.sh` and then enter your credentials for the node, then open the link it provides you with to access the node
