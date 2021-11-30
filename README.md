@@ -17,7 +17,11 @@ A demo of the API can be found [here](http://137.184.33.37/). It should be noted
 ### Using the node in a smart contract
 
 ```sol
-
+Chainlink.Request memory req = buildChainlinkRequest(stringToBytes32(_jobId), address(this), this.fulfillResult.selector);
+req.add("version", _version);
+req.add("code", _code);
+req.add("packages", _packages);
+sendChainlinkRequestTo(_oracle, req, ORACLE_PAYMENT);
 ```
 
 For a real example look at `node/contracts/Test.sol`
