@@ -114,3 +114,4 @@ coverage.json
 typechain
 cache
 artifacts
+storage.json
