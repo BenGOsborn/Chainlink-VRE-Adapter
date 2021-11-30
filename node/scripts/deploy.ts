@@ -9,7 +9,7 @@ async function main() {
     const LINK_ADDRESS = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"; // Change for your network of choice to deploy to
     const oracle = await Oracle.deploy(LINK_ADDRESS);
     await oracle.deployed();
-    console.log(`Greeter deployed to: ${oracle.address}`);
+    console.log(`Deployed oracle to: ${oracle.address}`);
 
     // Approve the Oracle address to the contract
     const nodeAddress = process.env.NODE_ADDRESS as string;
