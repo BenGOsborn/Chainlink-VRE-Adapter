@@ -12,10 +12,18 @@ async function main() {
     console.log(`Deployed oracle to: https://rinkeby.etherscan.io/address/${oracle.address}`);
     addresses.oracleAddress = oracle.address;
 
-    // Approve the Oracle address to the contract
+    // Approve the Oracle operator address to the contract
     const nodeAddress = addresses.nodeAddress;
     await oracle.setFulfillmentPermission(nodeAddress, true);
     console.log(`Approved ${nodeAddress} as a node operator`);
+
+    // Fund the Oracle operator
+    const signer = hre.ethers.provider.getSigner();
+    const amount = 0.01;
+    await signer.sendTransaction({
+        to: nodeAddress,
+        value: hre.ethers.utils.parseEther(amount.toString()),
+    });
 
     // Save the addresses to the file
     fs.writeFileSync("address.json", JSON.stringify(addresses));
